@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0b1411;
+  --foreground: #ffffff;
+}
+
+@theme {
+  --font-outfit: 'Outfit', sans-serif;
+
+  --color-dark: #0b1411;
+  --color-card: #15221e;
+  --color-mesh: #1c2e28;
+  --color-primary: #22c55e;
+  --color-secondary: #3b82f6;
+  --color-accent: #fbbf24;
+  --color-muted: #94a3b8;
+  --color-border: #23372d;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-outfit);
+  /* Football Pitch Pattern */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1411;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1c2e28;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #23372d;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
