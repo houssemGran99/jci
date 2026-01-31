@@ -1,6 +1,6 @@
 import { Team, Player, Match } from './types';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export const getTeams = async (options?: RequestInit): Promise<Team[]> => {
     const res = await fetch(`${API_URL}/teams`, options);
