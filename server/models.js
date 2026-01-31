@@ -17,8 +17,7 @@ const playerSchema = new mongoose.Schema({
 });
 
 const scorerSchema = new mongoose.Schema({
-    playerId: { type: Number, required: true },
-    minute: { type: Number, required: true }
+    playerId: { type: Number, required: true }
 }, { _id: false });
 
 const matchSchema = new mongoose.Schema({
@@ -38,7 +37,6 @@ const matchSchema = new mongoose.Schema({
     scorers: [scorerSchema],
     cards: [{
         playerId: { type: Number, required: true },
-        minute: { type: Number },
         type: { type: String, enum: ['yellow', 'red'], default: 'yellow' }
     }]
 });

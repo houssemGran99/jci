@@ -20,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${outfit.className} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>

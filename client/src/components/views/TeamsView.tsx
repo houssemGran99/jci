@@ -22,7 +22,7 @@ export default function TeamsView({ data }: TeamsViewProps) {
                             <div className="flex flex-wrap gap-2">
                                 {data.players.filter(p => p.teamId === t.id).slice(0, 5).map(p => (
                                     <span key={p.id} className={`text-[10px] px-2 py-0.5 rounded bg-white/5 ${p.isCaptain ? 'text-accent border border-accent/20' : 'text-muted'}`}>
-                                        {p.name}
+                                        {p.name} {p.isCaptain && '©'}
                                     </span>
                                 ))}
                                 {data.players.filter(p => p.teamId === t.id).length > 5 && <span className="text-[10px] px-2 py-0.5 text-muted">+</span>}

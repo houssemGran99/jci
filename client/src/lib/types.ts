@@ -25,12 +25,10 @@ export interface Player {
 
 export interface Scorer {
     playerId: number;
-    minute: number;
 }
 
 export interface Card {
     playerId: number;
-    minute: number;
     type: 'yellow' | 'red';
 }
 

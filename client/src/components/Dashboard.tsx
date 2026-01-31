@@ -14,7 +14,7 @@ type View = 'standings' | 'matches' | 'scorers' | 'teams';
 export default function Dashboard({ data }: { data: AppData }) {
     const [currentView, setCurrentView] = useState<View>('standings');
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-    const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
+    const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
 
     const handleTeamClick = (teamId: number) => {
         const team = data.teams.find(t => t.id === teamId);
@@ -26,7 +26,7 @@ export default function Dashboard({ data }: { data: AppData }) {
             {/* Header */}
             <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-2xl font-bold bg-gradient-to-r from-primary to-green-700 bg-clip-text text-transparent flex items-center gap-2">
-                    <img src="/JCI Beni Hassen (1).png" alt="Logo" className="h-12 w-auto object-contain" />
+                    <img src="/jci.png" alt="Logo" className="h-12 w-auto object-contain" />
                     Beni Hassen Tkawer
                 </div>
                 <nav>
