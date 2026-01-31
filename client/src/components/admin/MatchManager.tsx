@@ -283,7 +283,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                 <button
                                     className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
                                     onClick={() => setMatchForm({ ...matchForm, scoreHome: Math.max(0, (matchForm.scoreHome ?? 0) - 1) })}
-                                    disabled={matchForm.scoreHome === null || matchForm.scoreHome <= 0}
+                                    disabled={(matchForm.scoreHome ?? 0) <= 0}
                                 >
                                     -
                                 </button>
@@ -312,7 +312,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                 <button
                                     className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
                                     onClick={() => setMatchForm({ ...matchForm, scoreAway: Math.max(0, (matchForm.scoreAway ?? 0) - 1) })}
-                                    disabled={matchForm.scoreAway === null || matchForm.scoreAway <= 0}
+                                    disabled={(matchForm.scoreAway ?? 0) <= 0}
                                 >
                                     -
                                 </button>
