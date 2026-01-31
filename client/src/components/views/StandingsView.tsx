@@ -14,7 +14,7 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
 
     return (
         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
                 Classement des Groupes
             </h2>
 

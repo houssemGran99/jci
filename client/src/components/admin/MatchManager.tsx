@@ -49,7 +49,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             setIsEditing(false);
             setSelectedMatch(null);
         } catch (err) {
-            alert('Error saving match');
+            alert('Erreur lors de l\'enregistrement du match');
             console.error(err);
         }
     };
@@ -57,8 +57,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     const handleDeleteMatch = (id: number) => {
         setModalConfig({
             isOpen: true,
-            title: 'Delete Match',
-            message: 'Are you sure you want to delete this match?',
+            title: 'Supprimer le Match',
+            message: 'Êtes-vous sûr de vouloir supprimer ce match ?',
             onConfirm: async () => {
                 try {
                     await deleteMatch(id);
@@ -68,7 +68,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                         setIsEditing(false);
                     }
                 } catch (err) {
-                    alert('Error deleting match');
+                    alert('Erreur lors de la suppression du match');
                 }
                 setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
@@ -131,7 +131,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             {/* Match List */}
             <div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
-                    <h3 className="text-xl font-bold">Matches</h3>
+                    <h3 className="text-xl font-bold">Matchs</h3>
                     <select
                         className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs"
                         value={selectedDay}
@@ -141,10 +141,10 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             else setSelectedDay(parseInt(val));
                         }}
                     >
-                        <option value="all">All Days</option>
-                        <option value="today">Today</option>
+                        <option value="all">Tous les jours</option>
+                        <option value="today">Aujourd'hui</option>
                         {[1, 2, 3, 4, 5, 6, 7].map(d => (
-                            <option key={d} value={d}>{d >= 6 ? (d === 6 ? 'Semi Final' : 'Final') : `Day ${d}`}</option>
+                            <option key={d} value={d}>{d >= 6 ? (d === 6 ? 'Demi-Finale' : 'Finale') : `Journée ${d}`}</option>
                         ))}
                     </select>
                 </div>
@@ -195,10 +195,10 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                     {match.status === 'inprogress' ? (
                                         <span className="flex items-center gap-1 text-red-400 font-bold animate-pulse">
                                             <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                            LIVE
+                                            EN DIRECT
                                         </span>
                                     ) : (
-                                        <span>{match.status}</span>
+                                        <span>{match.status === 'scheduled' ? 'Planifié' : 'Terminé'}</span>
                                     )}
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                         onClick={() => { setSelectedMatch(null); setIsEditing(false); setMatchForm(defaultForm); }}
                         className="w-full py-2 border border-dashed border-white/30 rounded text-muted hover:text-white hover:border-white"
                     >
-                        + Schedule New Match
+                        + Planifier un nouveau match
                     </button>
                 </div>
             </div>
@@ -218,24 +218,24 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             {/* Editor */}
             <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold">{isEditing ? `Edit Match #${selectedMatch?.id}` : 'New Match'}</h3>
+                    <h3 className="text-xl font-bold">{isEditing ? `Modifier le Match #${selectedMatch?.id}` : 'Nouveau Match'}</h3>
                     {isEditing && (
-                        <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-red-400 text-sm hover:underline">Delete Match</button>
+                        <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-red-400 text-sm hover:underline">Supprimer le Match</button>
                     )}
                 </div>
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Status</label>
+                            <label className="block text-xs uppercase text-muted mb-1">Statut</label>
                             <select
                                 className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
                                 value={matchForm.status}
                                 onChange={(e) => setMatchForm({ ...matchForm, status: e.target.value as any })}
                             >
-                                <option value="scheduled">Scheduled</option>
-                                <option value="inprogress">In Progress</option>
-                                <option value="completed">Completed</option>
+                                <option value="scheduled">Planifié</option>
+                                <option value="inprogress">En Cours</option>
+                                <option value="completed">Terminé</option>
                             </select>
                         </div>
                         <div>
@@ -248,33 +248,33 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             />
                         </div>
                         <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Day</label>
+                            <label className="block text-xs uppercase text-muted mb-1">Journée</label>
                             <select className="w-full bg-black/20 border border-white/10 rounded p-2 text-white" value={matchForm.matchDay} onChange={(e) => setMatchForm({ ...matchForm, matchDay: parseInt(e.target.value) })}>
                                 {[1, 2, 3, 4, 5].map(d => <option key={d} value={d}>J{d}</option>)}
-                                <option value={6}>Semi Final</option>
-                                <option value={7}>Final</option>
+                                <option value={6}>Demi-Finale</option>
+                                <option value={7}>Finale</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Group / Stage</label>
+                            <label className="block text-xs uppercase text-muted mb-1">Groupe / Phase</label>
                             <select className="w-full bg-black/20 border border-white/10 rounded p-2 text-white" value={matchForm.group} onChange={(e) => setMatchForm({ ...matchForm, group: e.target.value })}>
-                                <option value="A">Group A</option>
-                                <option value="B">Group B</option>
-                                <option value="Semi Final">Semi Final</option>
-                                <option value="Final">Final</option>
+                                <option value="A">Groupe A</option>
+                                <option value="B">Groupe B</option>
+                                <option value="Semi Final">Demi-Finale</option>
+                                <option value="Final">Finale</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 p-4 bg-black/20 rounded-lg">
                         <div className="space-y-2">
-                            <label className="block text-xs uppercase text-muted">Home Team</label>
+                            <label className="block text-xs uppercase text-muted">Équipe Domicile</label>
                             <select
                                 className="w-full bg-card border border-white/10 rounded p-2 text-white"
                                 value={matchForm.teamHomeId || ''}
                                 onChange={(e) => setMatchForm({ ...matchForm, teamHomeId: parseInt(e.target.value) })}
                             >
-                                <option value="">Select Team</option>
+                                <option value="">Sélectionner une équipe</option>
                                 {initialData.teams
                                     .filter(t => t.id !== matchForm.teamAwayId)
                                     .map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -297,13 +297,13 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             </div>
                         </div>
                         <div className="space-y-2 text-right">
-                            <label className="block text-xs uppercase text-muted">Away Team</label>
+                            <label className="block text-xs uppercase text-muted">Équipe Extérieur</label>
                             <select
                                 className="w-full bg-card border border-white/10 rounded p-2 text-white"
                                 value={matchForm.teamAwayId || ''}
                                 onChange={(e) => setMatchForm({ ...matchForm, teamAwayId: parseInt(e.target.value) })}
                             >
-                                <option value="">Select Team</option>
+                                <option value="">Sélectionner une équipe</option>
                                 {initialData.teams
                                     .filter(t => t.id !== matchForm.teamHomeId)
                                     .map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -334,12 +334,12 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             {/* Scorers */}
                             <div className="border border-white/10 rounded p-4">
                                 <div className="flex justify-between items-center mb-2">
-                                    <label className="text-xs uppercase font-bold">Goals</label>
+                                    <label className="text-xs uppercase font-bold">Buts</label>
                                     <select
                                         className="text-xs bg-black/30 p-1 rounded"
                                         onChange={(e) => { if (e.target.value) addScorer(parseInt(e.target.value)); e.target.value = ''; }}
                                     >
-                                        <option value="">+ Add Scorer</option>
+                                        <option value="">+ Ajouter Buteur</option>
                                         {getMatchPlayers().map(p => {
                                             const team = initialData.teams.find(t => t.id === p.teamId);
                                             return <option key={p.id} value={p.id}>{p.name} ({team?.name})</option>;
@@ -363,12 +363,12 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             {/* Cards */}
                             <div className="border border-white/10 rounded p-4">
                                 <div className="flex justify-between items-center mb-2">
-                                    <label className="text-xs uppercase font-bold text-yellow-400">Cards</label>
+                                    <label className="text-xs uppercase font-bold text-yellow-400">Cartons</label>
                                     <select
                                         className="text-xs bg-black/30 p-1 rounded"
                                         onChange={(e) => { if (e.target.value) addCard(parseInt(e.target.value)); e.target.value = ''; }}
                                     >
-                                        <option value="">+ Add Card</option>
+                                        <option value="">+ Ajouter Carton</option>
                                         {getMatchPlayers().map(p => {
                                             const team = initialData.teams.find(t => t.id === p.teamId);
                                             return <option key={p.id} value={p.id}>{p.name} ({team?.name})</option>;
@@ -391,8 +391,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                                         setMatchForm({ ...matchForm, cards: newCards });
                                                     }}
                                                 >
-                                                    <option value="yellow">Yellow</option>
-                                                    <option value="red">Red</option>
+                                                    <option value="yellow">Jaune</option>
+                                                    <option value="red">Rouge</option>
                                                 </select>
                                                 <button onClick={() => removeCard(i)} className="text-red-400 px-2">×</button>
                                             </div>
@@ -405,13 +405,13 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
                     <button
                         onClick={handleSaveMatch}
-                        className="w-full bg-primary hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition mt-6"
+                        className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition mt-6"
                     >
-                        {isEditing ? 'Update Match Results' : 'Schedule Match'}
+                        {isEditing ? 'Mettre à jour les résultats' : 'Planifier le match'}
                     </button>
 
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

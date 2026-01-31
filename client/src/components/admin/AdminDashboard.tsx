@@ -38,11 +38,11 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                 <div className="bg-card p-8 rounded-2xl border border-white/10 shadow-2xl w-full max-w-md">
                     <div className="text-center mb-8">
                         <img src="/jci.png" alt="Logo" className="w-20 h-20 object-contain mx-auto mb-4" />
-                        <h1 className="text-2xl font-bold">Admin Login</h1>
+                        <h1 className="text-2xl font-bold">Connexion Admin</h1>
                     </div>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div>
-                            <label className="block text-sm text-muted mb-1">Username</label>
+                            <label className="block text-sm text-muted mb-1">Nom d'utilisateur</label>
                             <input
                                 type="text"
                                 className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary outline-none transition"
@@ -51,7 +51,7 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm text-muted mb-1">Password</label>
+                            <label className="block text-sm text-muted mb-1">Mot de passe</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
@@ -71,13 +71,13 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                         {error && <p className="text-red-400 text-sm text-center">{error}</p>}
                         <button
                             type="submit"
-                            className="w-full bg-primary hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+                            className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition"
                         >
-                            Login
+                            Se connecter
                         </button>
                     </form>
                     <div className="mt-6 text-center">
-                        <a href="/" className="text-muted hover:text-white text-sm underline">Back to Site</a>
+                        <a href="/" className="text-muted hover:text-white text-sm underline">Retour au site</a>
                     </div>
                 </div>
             </div>
@@ -89,13 +89,13 @@ export default function AdminDashboard({ data }: { data: AppData }) {
             <header className="mb-8 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <img src="/jci.png" alt="Logo" className="w-12 h-12 object-contain" />
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-green-500 bg-clip-text text-transparent">
-                        Admin Dashboard
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                        Tableau de Bord Admin
                     </h1>
                 </div>
                 <div className="flex items-center gap-4">
-                    <a href="/" className="text-muted hover:text-white underline">Back to Site</a>
-                    <button onClick={() => setIsAuthenticated(false)} className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-white transition">Logout</button>
+                    <a href="/" className="text-muted hover:text-white underline">Retour au site</a>
+                    <button onClick={() => setIsAuthenticated(false)} className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-white transition">Déconnexion</button>
                 </div>
             </header>
 
@@ -104,13 +104,13 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                     onClick={() => setActiveTab('teams')}
                     className={`px-6 py-2 rounded-lg font-bold transition ${activeTab === 'teams' ? 'bg-primary text-white' : 'bg-card text-muted hover:bg-white/5'}`}
                 >
-                    Manage Teams & Players
+                    Gérer Équipes & Joueurs
                 </button>
                 <button
                     onClick={() => setActiveTab('matches')}
                     className={`px-6 py-2 rounded-lg font-bold transition ${activeTab === 'matches' ? 'bg-primary text-white' : 'bg-card text-muted hover:bg-white/5'}`}
                 >
-                    Manage Matches
+                    Gérer Matchs
                 </button>
             </div>
 

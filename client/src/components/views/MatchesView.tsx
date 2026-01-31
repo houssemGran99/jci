@@ -23,7 +23,7 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
                 Calendrier des Matchs
             </h2>
 
@@ -33,7 +33,7 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
                         key={day}
                         onClick={() => setSelectedDay(day as number | 'all' | 'today')}
                         className={`px-5 py-2 rounded-lg font-bold uppercase text-sm border transition-all whitespace-nowrap ${selectedDay === day
-                            ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(34,197,94,0.4)]'
+                            ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(0,151,218,0.4)]'
                             : 'bg-card text-muted border-white/10 hover:bg-white/5 hover:text-white'}`}
                     >
                         {day === 'all' ? 'TOUS' : day === 'today' ? "AUJOURD'HUI" : day === 6 ? 'SF' : day === 7 ? 'FINAL' : `J${day}`}

@@ -61,7 +61,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             setIsEditing(false);
             setSelectedTeam(null);
         } catch (err) {
-            alert('Error saving team');
+            alert('Erreur lors de l\'enregistrement de l\'équipe');
             console.error(err);
         }
     };
@@ -69,8 +69,8 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
     const handleDeleteTeam = (id: number) => {
         setModalConfig({
             isOpen: true,
-            title: 'Delete Team',
-            message: 'Are you sure you want to delete this team? All associated players and matches will also be permanently deleted.',
+            title: 'Supprimer l\'équipe',
+            message: 'Êtes-vous sûr de vouloir supprimer cette équipe ? Tous les joueurs et matchs associés seront également supprimés définitivement.',
             onConfirm: async () => {
                 try {
                     await deleteTeam(id);
@@ -82,7 +82,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                     // Refresh page to sync matches (since matches are passed as initialData)
                     window.location.reload();
                 } catch (err) {
-                    alert('Error deleting team');
+                    alert('Erreur lors de la suppression de l\'équipe');
                 }
                 setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
@@ -108,21 +108,21 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             setPlayers([...players, player]);
             setNewPlayerName('');
         } catch (err) {
-            alert('Error adding player');
+            alert('Erreur lors de l\'ajout du joueur');
         }
     };
 
     const handleDeletePlayer = (id: number) => {
         setModalConfig({
             isOpen: true,
-            title: 'Delete Player',
-            message: 'Are you sure you want to delete this player?',
+            title: 'Supprimer le joueur',
+            message: 'Êtes-vous sûr de vouloir supprimer ce joueur ?',
             onConfirm: async () => {
                 try {
                     await deletePlayer(id);
                     setPlayers(players.filter(p => p.id !== id));
                 } catch (err) {
-                    alert('Error deleting player');
+                    alert('Erreur lors de la suppression du joueur');
                 }
                 setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
@@ -141,7 +141,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             />
             {/* Team List */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-2">Teams</h3>
+                <h3 className="text-xl font-bold border-b border-white/10 pb-2">Équipes</h3>
                 <div className="space-y-2 max-h-[600px] overflow-y-auto">
                     {teams.map(team => (
                         <div
@@ -157,7 +157,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                             <div className="flex items-center gap-3">
                                 <span>{team.logo}</span>
                                 <span className="font-bold">{team.name}</span>
-                                <span className="text-xs opacity-70 bg-black/30 px-2 py-1 rounded">Group {team.group}</span>
+                                <span className="text-xs opacity-70 bg-black/30 px-2 py-1 rounded">Groupe {team.group}</span>
                             </div>
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteTeam(team.id); }}
@@ -179,18 +179,18 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                         }}
                         className="w-full py-2 border border-dashed border-white/30 rounded text-muted hover:text-white hover:border-white"
                     >
-                        + Add New Team
+                        + Ajouter une nouvelle équipe
                     </button>
                 </div>
             </div>
 
             {/* Editor Area */}
             <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-bold mb-6">{isEditing ? 'Edit Team' : 'Create New Team'}</h3>
+                <h3 className="text-xl font-bold mb-6">{isEditing ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}</h3>
 
                 <div className="space-y-4 mb-8">
                     <div>
-                        <label className="block text-xs uppercase text-muted mb-1">Team Name</label>
+                        <label className="block text-xs uppercase text-muted mb-1">Nom de l'équipe</label>
                         <input
                             type="text"
                             className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
@@ -200,18 +200,18 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Group</label>
+                            <label className="block text-xs uppercase text-muted mb-1">Groupe</label>
                             <select
                                 className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
                                 value={teamForm.group}
                                 onChange={(e) => setTeamForm({ ...teamForm, group: e.target.value })}
                             >
-                                <option value="A">Group A</option>
-                                <option value="B">Group B</option>
+                                <option value="A">Groupe A</option>
+                                <option value="B">Groupe B</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Logo (Choose Emoji)</label>
+                            <label className="block text-xs uppercase text-muted mb-1">Logo (Choisir Emoji)</label>
                             <div className="flex gap-4 items-center">
                                 <select
                                     className="flex-1 bg-black/20 border border-white/10 rounded p-2 text-white text-xl"
@@ -229,11 +229,11 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
 
                     {/* Players Section for New Teams */}
                     <div className="pt-4 border-t border-white/10">
-                        <label className="block text-xs uppercase text-muted mb-2">Players {isEditing ? '(Add New)' : ''}</label>
+                        <label className="block text-xs uppercase text-muted mb-2">Joueurs {isEditing ? '(Ajouter Nouveau)' : ''}</label>
                         <div className="flex gap-2 mb-2">
                             <input
                                 type="text"
-                                placeholder="Player Name"
+                                placeholder="Nom du joueur"
                                 className="flex-1 bg-black/20 border border-white/10 rounded p-2 text-white text-sm"
                                 value={newPlayerName}
                                 onChange={(e) => setNewPlayerName(e.target.value)}
@@ -291,7 +291,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                                 {/* Also show staged new players if any were added before saving in edit mode */}
                                 {formPlayers.map((name, i) => (
                                     <li key={`new-${i}`} className="flex justify-between items-center bg-white/10 p-2 rounded text-sm border border-dashed border-white/20">
-                                        <span className="italic opacity-70">{name} (Pending Save)</span>
+                                        <span className="italic opacity-70">{name} (En attente d'enregistrement)</span>
                                         <button onClick={() => handleRemovePlayerFromForm(i)} className="text-red-400 px-2">×</button>
                                     </li>
                                 ))}
@@ -302,9 +302,9 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
 
                     <button
                         onClick={handleSaveTeam}
-                        className="w-full bg-primary hover:bg-green-600 text-white font-bold py-2 rounded transition mt-4"
+                        className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-2 rounded transition mt-4"
                     >
-                        {isEditing ? 'Save Changes' : 'Create Team'}
+                        {isEditing ? 'Enregistrer' : 'Créer l\'équipe'}
                     </button>
                 </div>
             </div>

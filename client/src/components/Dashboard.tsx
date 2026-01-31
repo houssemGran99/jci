@@ -25,7 +25,7 @@ export default function Dashboard({ data }: { data: AppData }) {
         <div className="flex flex-col min-h-screen">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-green-700 bg-clip-text text-transparent flex items-center gap-2">
+                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-700 bg-clip-text text-transparent flex items-center gap-2">
                     <img src="/jci.png" alt="Logo" className="h-12 w-auto object-contain" />
                     Beni Hassen Tkawer
                 </div>
@@ -40,7 +40,7 @@ export default function Dashboard({ data }: { data: AppData }) {
                             <li
                                 key={item.id}
                                 onClick={() => setCurrentView(item.id as View)}
-                                className={`px-4 py-2 rounded-lg cursor-pointer transition-all text-sm font-medium whitespace-nowrap ${currentView === item.id ? 'bg-primary text-white shadow-[0_0_15px_rgba(34,197,94,0.4)] border border-white/20 -translate-y-[1px]' : 'text-muted hover:text-white'}`}
+                                className={`px-4 py-2 rounded-lg cursor-pointer transition-all text-sm font-medium whitespace-nowrap ${currentView === item.id ? 'bg-primary text-white shadow-[0_0_15px_rgba(0,151,218,0.4)] border border-white/20 -translate-y-[1px]' : 'text-muted hover:text-white'}`}
                             >
                                 {item.label}
                             </li>
