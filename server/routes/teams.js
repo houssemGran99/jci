@@ -1,5 +1,6 @@
 import express from 'express';
 import { Team, Player, Match } from '../models.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new team
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const lastTeam = await Team.findOne().sort('-id');
         const newId = lastTeam ? lastTeam.id + 1 : 1;
@@ -27,7 +28,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update a team
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { _id, ...updateData } = req.body;
         const team = await Team.findOneAndUpdate({ id: req.params.id }, updateData, { new: true });
@@ -38,7 +39,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a team
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const teamId = parseInt(req.params.id);
         // Delete team

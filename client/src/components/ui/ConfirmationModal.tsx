@@ -39,7 +39,7 @@ export default function ConfirmationModal({
                         onClick={onConfirm}
                         className={`px-4 py-2 rounded-lg text-sm font-medium text-white shadow-lg transition-all ${isDestructive
                             ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
-                            : 'bg-primary hover:bg-blue-600 shadow-blue-500/20'
+                            : 'bg-primary hover:bg-emerald-700 shadow-emerald-500/20'
                             }`}
                     >
                         {confirmText}

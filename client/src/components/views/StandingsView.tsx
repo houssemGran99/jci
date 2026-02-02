@@ -14,8 +14,11 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
 
     return (
         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
-                Classement des Groupes
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4 flex items-center justify-between">
+                <span>Classement des Groupes</span>
+                <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground bg-black/20 px-3 py-1 rounded-full border border-white/5">
+
+                </div>
             </h2>
 
             {groups.map(group => {
@@ -41,12 +44,15 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
                                 </thead>
                                 <tbody className="text-sm">
                                     {groupTeams.map((t, i) => (
-                                        <tr key={t.id} className="border-b border-white/5 hover:bg-white/5 transition group">
-                                            <td className={`p-3 text-center font-bold sticky left-0 z-10 bg-card group-hover:bg-white/5 border-r border-white/10 ${i === 0 ? 'text-primary' : i === 1 ? 'text-secondary' : 'text-muted'}`}>{i + 1}</td>
+                                        <tr key={t.id} className={`border-b border-white/5 hover:bg-white/5 transition group ${i < 2 || i >= groupTeams.length - 2 ? 'bg-white/5' : ''}`}>
+                                            <td className={`p-3 text-center font-bold sticky left-0 z-10 bg-card group-hover:bg-white/5 border-r border-white/10 ${i === 0 ? 'text-primary' : i === 1 ? 'text-secondary' : i >= groupTeams.length - 2 ? 'text-red-500' : 'text-muted'} ${i < 2 ? 'shadow-[inset_4px_0_0_#10b981]' : i >= groupTeams.length - 2 ? 'shadow-[inset_4px_0_0_#ef4444]' : ''}`}>
+                                                {i + 1}
+                                            </td>
                                             <td className="p-3 font-semibold sticky left-10 z-10 bg-card group-hover:bg-white/5 border-r border-white/10 shadow-[2px_0_5px_rgba(0,0,0,0.1)] cursor-pointer" onClick={() => onTeamClick(t.id)}>
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">{t.logo}</div>
                                                     <span className="truncate max-w-[120px]">{t.name}</span>
+
                                                 </div>
                                             </td>
                                             <td className="p-3 text-center">{t.played}</td>

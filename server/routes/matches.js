@@ -1,5 +1,6 @@
 import express from 'express';
 import { Match } from '../models.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new match
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const lastMatch = await Match.findOne().sort('-id');
         const newId = lastMatch ? lastMatch.id + 1 : 1;
@@ -27,7 +28,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update a match
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { _id, ...updateData } = req.body;
         const match = await Match.findOneAndUpdate({ id: req.params.id }, updateData, { new: true });
@@ -39,7 +40,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a match
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         await Match.findOneAndDelete({ id: req.params.id });
         res.json({ message: 'Match deleted' });

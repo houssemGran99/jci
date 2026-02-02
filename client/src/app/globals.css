@@ -1,34 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b1411;
+  --background: #005031;
   --foreground: #ffffff;
 }
 
 @theme {
-  --font-outfit: 'Outfit', sans-serif;
+  --font-rubik: var(--font-rubik);
 
-  /* JCI Blue Theme */
-  --color-dark: #020617;
-  --color-card: #0f172a;
-  --color-mesh: #1e293b;
-  --color-primary: #0097DA;
-  /* JCI Blue */
-  --color-secondary: #3b82f6;
-  --color-accent: #fbbf24;
+  /* New Green/Orange Theme */
+  --color-dark: #005031;
+  --color-card: #00442a;
+  /* Slightly darker/different for contrast */
+  --color-mesh: #0C9962;
+  --color-primary: #0C9962;
+  --color-secondary: #FF751F;
+  --color-accent: #FF751F;
   --color-muted: #94a3b8;
-  --color-border: #1e293b;
+  --color-border: #0C9962;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-outfit);
-  /* Football Pitch Pattern */
+  background-color: var(--background);
+  font-family: var(--font-rubik);
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(rgba(0, 80, 49, 0.5), rgba(0, 80, 49, 0.7)),
+    url('/background-img.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* Custom Scrollbar */

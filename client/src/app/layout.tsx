@@ -2,9 +2,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Outfit } from 'next/font/google';
+import { Rubik_Mono_One } from 'next/font/google';
 
-const outfit = Outfit({ subsets: ['latin'] });
+const rubikMono = Rubik_Mono_One({ subsets: ['latin'], weight: '400', variable: '--font-rubik' });
 
 export const metadata: Metadata = {
   title: "Beni Hassen Tkawer",
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.className} antialiased`}
+        className={`${rubikMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         {children}

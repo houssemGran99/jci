@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AppData, Team, Player } from '@/lib/types';
 import { createTeam, updateTeam, deleteTeam, createPlayer, deletePlayer } from '@/lib/api';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
@@ -11,6 +11,13 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
     const [players, setPlayers] = useState(initialData.players);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const editSectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (selectedTeam && window.innerWidth < 768) {
+            editSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [selectedTeam]);
 
     // Team Form State
     const [teamForm, setTeamForm] = useState<Partial<Team>>({ name: '', group: 'A', logo: '🛡️', colors: ['#ffffff', '#000000'] });
@@ -185,7 +192,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             </div>
 
             {/* Editor Area */}
-            <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+            <div ref={editSectionRef} className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <h3 className="text-xl font-bold mb-6">{isEditing ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}</h3>
 
                 <div className="space-y-4 mb-8">
@@ -198,7 +205,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                             onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div>
                             <label className="block text-xs uppercase text-muted mb-1">Groupe</label>
                             <select
@@ -209,7 +216,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                                 <option value="A">Groupe A</option>
                                 <option value="B">Groupe B</option>
                             </select>
-                        </div>
+                        </div><br />
                         <div>
                             <label className="block text-xs uppercase text-muted mb-1">Logo (Choisir Emoji)</label>
                             <div className="flex gap-4 items-center">
@@ -301,8 +308,9 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
 
 
                     <button
+                        type="submit"
                         onClick={handleSaveTeam}
-                        className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-2 rounded transition mt-4"
+                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-2 rounded transition mt-4"
                     >
                         {isEditing ? 'Enregistrer' : 'Créer l\'équipe'}
                     </button>

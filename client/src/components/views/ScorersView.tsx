@@ -11,7 +11,7 @@ export default function ScorersView({ data }: ScorersViewProps) {
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4">
                 Meilleurs Buteurs
             </h2>
             <div className="bg-card border border-white/10 rounded-xl overflow-hidden shadow-lg">

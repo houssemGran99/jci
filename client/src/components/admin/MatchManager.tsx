@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AppData, Match, Scorer, Card } from '@/lib/types';
 import { createMatch, updateMatch, deleteMatch } from '@/lib/api';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
@@ -10,6 +10,13 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     const [matches, setMatches] = useState(initialData.matches);
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const editSectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (selectedMatch && window.innerWidth < 768) {
+            editSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [selectedMatch]);
 
     // Match Form State
     // Match Form State
@@ -181,7 +188,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                                             </span>
                                         )}
-                                        <span className="text-xl font-bold tracking-widest">{match.status === 'completed' || match.status === 'inprogress' ? `${match.scoreHome} - ${match.scoreAway}` : 'VS'}</span>
+                                        <span className="text-xl font-bold tracking-widest">{match.status === 'completed' || match.status === 'inprogress' ? `${match.scoreHome}-${match.scoreAway}` : 'VS'}</span>
                                     </div>
 
                                     <div className="flex items-center gap-2 w-full md:w-[40%] justify-center md:justify-end flex-row-reverse md:flex-row">
@@ -216,7 +223,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             </div>
 
             {/* Editor */}
-            <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+            <div ref={editSectionRef} className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold">{isEditing ? `Modifier le Match #${selectedMatch?.id}` : 'Nouveau Match'}</h3>
                     {isEditing && (
@@ -333,10 +340,10 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             {/* Scorers */}
                             {/* Scorers */}
                             <div className="border border-white/10 rounded p-4">
-                                <div className="flex justify-between items-center mb-2">
+                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
                                     <label className="text-xs uppercase font-bold">Buts</label>
                                     <select
-                                        className="text-xs bg-black/30 p-1 rounded"
+                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto"
                                         onChange={(e) => { if (e.target.value) addScorer(parseInt(e.target.value)); e.target.value = ''; }}
                                     >
                                         <option value="">+ Ajouter Buteur</option>
@@ -362,10 +369,10 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
                             {/* Cards */}
                             <div className="border border-white/10 rounded p-4">
-                                <div className="flex justify-between items-center mb-2">
+                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
                                     <label className="text-xs uppercase font-bold text-yellow-400">Cartons</label>
                                     <select
-                                        className="text-xs bg-black/30 p-1 rounded"
+                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto"
                                         onChange={(e) => { if (e.target.value) addCard(parseInt(e.target.value)); e.target.value = ''; }}
                                     >
                                         <option value="">+ Ajouter Carton</option>
@@ -405,7 +412,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
                     <button
                         onClick={handleSaveMatch}
-                        className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition mt-6"
+                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 transition mt-6"
                     >
                         {isEditing ? 'Mettre à jour les résultats' : 'Planifier le match'}
                     </button>

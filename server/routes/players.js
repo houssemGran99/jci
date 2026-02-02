@@ -1,5 +1,6 @@
 import express from 'express';
 import { Player } from '../models.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new player
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const lastPlayer = await Player.findOne().sort('-id');
         const newId = lastPlayer ? lastPlayer.id + 1 : 101; // Start from 101 if empty
@@ -27,7 +28,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update a player
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { _id, ...updateData } = req.body;
         const player = await Player.findOneAndUpdate({ id: req.params.id }, updateData, { new: true });
@@ -38,7 +39,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a player
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         await Player.findOneAndDelete({ id: req.params.id });
         res.json({ message: 'Player deleted' });

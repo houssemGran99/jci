@@ -21,11 +21,19 @@ export const getMatches = async (options?: RequestInit): Promise<Match[]> => {
 };
 
 
+const getAuthHeaders = () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : '',
+    };
+};
+
 // TEAMS
 export const createTeam = async (team: Partial<Team>): Promise<Team> => {
     const res = await fetch(`${API_URL}/teams`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(team),
     });
     if (!res.ok) throw new Error('Failed to create team');
@@ -35,7 +43,7 @@ export const createTeam = async (team: Partial<Team>): Promise<Team> => {
 export const updateTeam = async (id: number, team: Partial<Team>): Promise<Team> => {
     const res = await fetch(`${API_URL}/teams/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(team),
     });
     if (!res.ok) throw new Error('Failed to update team');
@@ -43,7 +51,10 @@ export const updateTeam = async (id: number, team: Partial<Team>): Promise<Team>
 };
 
 export const deleteTeam = async (id: number): Promise<void> => {
-    const res = await fetch(`${API_URL}/teams/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/teams/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
     if (!res.ok) throw new Error('Failed to delete team');
 };
 
@@ -51,7 +62,7 @@ export const deleteTeam = async (id: number): Promise<void> => {
 export const createPlayer = async (player: Partial<Player>): Promise<Player> => {
     const res = await fetch(`${API_URL}/players`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(player),
     });
     if (!res.ok) throw new Error('Failed to create player');
@@ -61,7 +72,7 @@ export const createPlayer = async (player: Partial<Player>): Promise<Player> => 
 export const updatePlayer = async (id: number, player: Partial<Player>): Promise<Player> => {
     const res = await fetch(`${API_URL}/players/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(player),
     });
     if (!res.ok) throw new Error('Failed to update player');
@@ -69,7 +80,10 @@ export const updatePlayer = async (id: number, player: Partial<Player>): Promise
 };
 
 export const deletePlayer = async (id: number): Promise<void> => {
-    const res = await fetch(`${API_URL}/players/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/players/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
     if (!res.ok) throw new Error('Failed to delete player');
 };
 
@@ -77,7 +91,7 @@ export const deletePlayer = async (id: number): Promise<void> => {
 export const createMatch = async (match: Partial<Match>): Promise<Match> => {
     const res = await fetch(`${API_URL}/matches`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(match),
     });
     if (!res.ok) throw new Error('Failed to create match');
@@ -87,7 +101,7 @@ export const createMatch = async (match: Partial<Match>): Promise<Match> => {
 export const updateMatch = async (id: number, match: Partial<Match>): Promise<Match> => {
     const res = await fetch(`${API_URL}/matches/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(match),
     });
     if (!res.ok) throw new Error('Failed to update match');
@@ -95,16 +109,27 @@ export const updateMatch = async (id: number, match: Partial<Match>): Promise<Ma
 };
 
 export const deleteMatch = async (id: number): Promise<void> => {
-    const res = await fetch(`${API_URL}/matches/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/matches/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
     if (!res.ok) throw new Error('Failed to delete match');
 };
 
-export const login = async (credentials: { username: string; password: string; }): Promise<{ success: boolean; message?: string }> => {
+export const login = async (credentials: { username: string; password: string; }): Promise<{ success: boolean; message?: string; token?: string }> => {
     const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
     });
-    // Return the response even if not ok, so the component can handle the error message
-    return res.json();
+    const data = await res.json();
+    if (data.success && data.token) {
+        localStorage.setItem('authToken', data.token);
+    }
+    return data;
+};
+
+export const logout = () => {
+    localStorage.removeItem('authToken');
+    window.location.href = '/';
 };

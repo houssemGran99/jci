@@ -23,7 +23,7 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-300 bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4">
                 Calendrier des Matchs
             </h2>
 
@@ -93,14 +93,16 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
                                     </div>
 
                                     {m.status === 'completed' || m.status === 'inprogress' ? (
-                                        <div className="flex flex-col items-center">
-                                            <div className={`px-4 py-2 bg-black border-2 ${m.status === 'inprogress' ? 'border-red-500/50 shadow-red-500/20' : 'border-slate-800 shadow-accent/10'} rounded mx-2 md:mx-4 shadow-lg min-w-[100px] text-center transform scale-110 relative`}>
+                                        <div className="flex flex-col items-center shrink-0">
+                                            <div className={`px-6 py-2 bg-black border-2 ${m.status === 'inprogress' ? 'border-red-500/50 shadow-red-500/20' : 'border-slate-800 shadow-accent/10'} rounded-lg mx-2 shadow-lg min-w-[140px] flex items-center justify-center relative`}>
                                                 {m.status === 'inprogress' && <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                                 </span>}
-                                                <div className={`text-3xl md:text-4xl font-black ${m.status === 'inprogress' ? 'text-white' : 'text-accent'} tracking-widest whitespace-nowrap drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]`}>
-                                                    {m.scoreHome}-{m.scoreAway}
+                                                <div className={`text-4xl font-black ${m.status === 'inprogress' ? 'text-white' : 'text-accent'} tracking-widest whitespace-nowrap drop-shadow-[0_0_8px_rgba(251,191,36,0.5)] flex items-center justify-center gap-3`}>
+                                                    <span>{m.scoreHome}</span>
+                                                    <span className="text-white/20 text-3xl">-</span>
+                                                    <span>{m.scoreAway}</span>
                                                 </div>
                                             </div>
                                             {m.status === 'inprogress' && <span className="text-[10px] uppercase tracking-widest text-red-400 font-bold mt-1 animate-pulse">Live</span>}
