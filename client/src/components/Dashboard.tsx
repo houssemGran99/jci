@@ -25,13 +25,13 @@ export default function Dashboard({ data }: { data: AppData }) {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-0 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-2">
                     <img src="/jci.png" alt="Logo" className="h-12 w-auto object-contain" />
                     Beni Hassen Tkawer
                 </div>
-                <nav className="w-full md:w-auto">
-                    <ul className="grid grid-cols-5 gap-1 md:gap-2 bg-card p-1 rounded-2xl border border-white/10 w-full md:w-auto">
+                <nav className="w-full md:w-auto px-1 md:px-0">
+                    <ul className="grid grid-cols-5 gap-0.5 md:gap-2 bg-card p-1 rounded-2xl border border-white/10 w-full md:w-auto">
                         {[
                             { id: 'standings', label: 'Classement' },
                             { id: 'matches', label: 'Matchs' },
@@ -42,7 +42,7 @@ export default function Dashboard({ data }: { data: AppData }) {
                             <li
                                 key={item.id}
                                 onClick={() => setCurrentView(item.id as View)}
-                                className={`px-1 md:px-4 py-2 rounded-lg cursor-pointer transition-all text-[10px] md:text-sm font-medium flex items-center justify-center text-center ${currentView === item.id ? 'bg-primary text-white shadow-[0_0_15px_rgba(12,153,98,0.4)] border border-white/20 -translate-y-[1px]' : 'text-muted hover:text-white'}`}
+                                className={`py-2 rounded-lg cursor-pointer transition-all text-[9px] min-[360px]:text-[10px] md:text-sm font-medium flex items-center justify-center text-center tracking-tighter ${currentView === item.id ? 'bg-primary text-white shadow-[0_0_15px_rgba(12,153,98,0.4)] border border-white/20 -translate-y-[1px]' : 'text-muted hover:text-white'}`}
                             >
                                 {item.label}
                             </li>

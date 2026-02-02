@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import { AppData, Match, Scorer, Card } from '@/lib/types';
 import { createMatch, updateMatch, deleteMatch } from '@/lib/api';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import MatchResultTemplate from './MatchResultTemplate';
+import { toPng, toBlob } from 'html-to-image';
 
 export default function MatchManager({ initialData }: { initialData: AppData }) {
     const [matches, setMatches] = useState(initialData.matches);
@@ -12,6 +14,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [scorerSelection, setScorerSelection] = useState<{ teamId: number, side: 'home' | 'away' } | null>(null);
+    const [imagePreviewOpen, setImagePreviewOpen] = useState(false);
+    const imageRef = useRef<HTMLDivElement>(null);
     const editSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -140,6 +144,41 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
         setMatchForm(updates);
         setScorerSelection(null);
+        setMatchForm(updates);
+        setScorerSelection(null);
+    };
+
+    const handleDownloadImage = async () => {
+        if (!imageRef.current) return;
+        try {
+            const dataUrl = await toPng(imageRef.current, { cacheBust: true, pixelRatio: 2 });
+            const link = document.createElement('a');
+            link.download = `match-result-${matchForm.id || 'new'}.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('Error generating image:', err);
+            alert('Erreur lors de la génération de l\'image');
+        }
+    };
+
+    const handleShareImage = async () => {
+        if (!imageRef.current) return;
+        try {
+            const blob = await toBlob(imageRef.current, { cacheBust: true, pixelRatio: 2 });
+            if (blob && navigator.share) {
+                const file = new File([blob], `match-result-${matchForm.id}.png`, { type: 'image/png' });
+                await navigator.share({
+                    files: [file],
+                    title: 'Résultat du Match',
+                    text: `Résultat final: ${matchForm.scoreHome} - ${matchForm.scoreAway}`,
+                });
+            } else {
+                alert("Le partage n'est pas supporté sur ce navigateur/appareil.");
+            }
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
     };
 
 
@@ -418,7 +457,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             {/* Scorers */}
                             {/* Scorers */}
                             <div className="border border-white/10 rounded p-4">
-    
+
                                 <div className="space-y-2">
                                     {matchForm.scorers?.map((scorer, i) => {
                                         const p = initialData.players.find(pl => pl.id === scorer.playerId);
@@ -485,8 +524,59 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                         {isLoading ? 'Chargement...' : (isEditing ? 'Mettre à jour les résultats' : 'Planifier le match')}
                     </button>
 
+                    {/* Image Generation Button */}
+                    {isEditing && matchForm.status === 'completed' && matchForm.teamHomeId && matchForm.teamAwayId && (
+                        <button
+                            onClick={() => setImagePreviewOpen(true)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition mt-4 flex items-center justify-center gap-2"
+                        >
+                            <span>📸</span> Générer Image Résultats
+                        </button>
+                    )}
+
                 </div>
             </div >
+
+            {/* Image Preview Modal */}
+            {imagePreviewOpen && matchForm.teamHomeId && matchForm.teamAwayId && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
+                    <div className="relative max-h-[90vh] overflow-y-auto bg-card p-4 rounded-xl border border-white/10">
+                        <button
+                            className="absolute top-2 right-2 text-white bg-black/50 rounded-full w-8 h-8 z-50"
+                            onClick={() => setImagePreviewOpen(false)}
+                        >
+                            ✕
+                        </button>
+
+                        <div className="transform scale-50 md:scale-75 origin-top-left md:origin-center bg-black">
+                            <MatchResultTemplate
+                                ref={imageRef}
+                                match={matchForm as Match}
+                                homeTeam={initialData.teams.find(t => t.id === matchForm.teamHomeId)!}
+                                awayTeam={initialData.teams.find(t => t.id === matchForm.teamAwayId)!}
+                                players={initialData.players}
+                            />
+                        </div>
+
+                        <div className="flex justify-center mt-4 gap-4">
+                            <button
+                                onClick={handleDownloadImage}
+                                className="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg transition"
+                            >
+                                Télécharger
+                            </button>
+                            {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
+                                <button
+                                    onClick={handleShareImage}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center gap-2"
+                                >
+                                    <span>📤</span> Partager
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 }

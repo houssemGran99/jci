@@ -18,7 +18,11 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
         } else if (selectedDay !== 'all') {
             filtered = filtered.filter(m => m.matchDay === selectedDay);
         }
-        return [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return [...filtered].sort((a, b) => {
+            if (a.status === 'inprogress' && b.status !== 'inprogress') return -1;
+            if (b.status === 'inprogress' && a.status !== 'inprogress') return 1;
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
     }, [data.matches, selectedDay]);
 
     return (

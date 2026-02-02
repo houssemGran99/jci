@@ -45,13 +45,13 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                     onClick={() => setActiveTab('teams')}
                     className={`px-6 py-3 rounded-lg font-bold transition w-full md:w-auto ${activeTab === 'teams' ? 'bg-primary text-white shadow-lg shadow-emerald-900/40' : 'bg-card text-muted hover:bg-white/5 border border-white/5'}`}
                 >
-                    Gérer Équipes & Joueurs
+                    Équipes & Joueurs
                 </button>
                 <button
                     onClick={() => setActiveTab('matches')}
                     className={`px-6 py-3 rounded-lg font-bold transition w-full md:w-auto ${activeTab === 'matches' ? 'bg-primary text-white shadow-lg shadow-emerald-900/40' : 'bg-card text-muted hover:bg-white/5 border border-white/5'}`}
                 >
-                    Gérer Matchs
+                    Matchs
                 </button>
             </div>
 
