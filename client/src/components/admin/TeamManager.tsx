@@ -11,6 +11,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
     const [players, setPlayers] = useState(initialData.players);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const editSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -40,6 +41,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
 
     const handleSaveTeam = async () => {
         if (!teamForm.name) return;
+        setIsLoading(true);
         try {
             if (isEditing && selectedTeam) {
                 const updated = await updateTeam(selectedTeam.id, teamForm);
@@ -70,6 +72,8 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
         } catch (err) {
             alert('Erreur lors de l\'enregistrement de l\'équipe');
             console.error(err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -79,6 +83,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             title: 'Supprimer l\'équipe',
             message: 'Êtes-vous sûr de vouloir supprimer cette équipe ? Tous les joueurs et matchs associés seront également supprimés définitivement.',
             onConfirm: async () => {
+                setIsLoading(true);
                 try {
                     await deleteTeam(id);
                     setTeams(teams.filter(t => t.id !== id));
@@ -90,6 +95,8 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                     window.location.reload();
                 } catch (err) {
                     alert('Erreur lors de la suppression de l\'équipe');
+                } finally {
+                    setIsLoading(false);
                 }
                 setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
@@ -164,13 +171,14 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                             <div className="flex items-center gap-3">
                                 <span>{team.logo}</span>
                                 <span className="font-bold">{team.name}</span>
-                                <span className="text-xs opacity-70 bg-black/30 px-2 py-1 rounded">Groupe {team.group}</span>
+                                <span className="text-xs opacity-70 bg-black/30 px-2 py-1 rounded whitespace-nowrap">Groupe {team.group}</span>
                             </div>
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteTeam(team.id); }}
-                                className="text-red-400 hover:text-red-300 p-1"
+                                className="text-red-400 hover:text-red-300 p-1 disabled:opacity-50"
+                                disabled={isLoading}
                             >
-                                🗑️
+                                {isLoading ? '...' : '🗑️'}
                             </button>
                         </div>
                     ))}
@@ -310,9 +318,10 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                     <button
                         type="submit"
                         onClick={handleSaveTeam}
-                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-2 rounded transition mt-4"
+                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-2 rounded transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading}
                     >
-                        {isEditing ? 'Enregistrer' : 'Créer l\'équipe'}
+                        {isLoading ? 'Chargement...' : (isEditing ? 'Enregistrer' : 'Créer l\'équipe')}
                     </button>
                 </div>
             </div>

@@ -7,9 +7,10 @@ import StandingsView from './views/StandingsView';
 import MatchesView from './views/MatchesView';
 import ScorersView from './views/ScorersView';
 import TeamsView from './views/TeamsView';
+import BracketView from './views/BracketView';
 import TeamModal from './TeamModal';
 
-type View = 'standings' | 'matches' | 'scorers' | 'teams';
+type View = 'standings' | 'matches' | 'scorers' | 'teams' | 'bracket';
 
 export default function Dashboard({ data }: { data: AppData }) {
     const [currentView, setCurrentView] = useState<View>('standings');
@@ -30,10 +31,11 @@ export default function Dashboard({ data }: { data: AppData }) {
                     Beni Hassen Tkawer
                 </div>
                 <nav className="w-full md:w-auto">
-                    <ul className="grid grid-cols-4 gap-1 md:gap-2 bg-card p-1 rounded-2xl border border-white/10 w-full md:w-auto">
+                    <ul className="grid grid-cols-5 gap-1 md:gap-2 bg-card p-1 rounded-2xl border border-white/10 w-full md:w-auto">
                         {[
                             { id: 'standings', label: 'Classement' },
                             { id: 'matches', label: 'Matchs' },
+                            { id: 'bracket', label: 'Tableau' },
                             { id: 'scorers', label: 'Buteurs' },
                             { id: 'teams', label: 'Équipes' }
                         ].map(item => (
@@ -52,6 +54,7 @@ export default function Dashboard({ data }: { data: AppData }) {
             <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-20">
                 {currentView === 'standings' && <StandingsView data={data} onTeamClick={handleTeamClick} />}
                 {currentView === 'matches' && <MatchesView data={data} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
+                {currentView === 'bracket' && <BracketView data={data} onTeamClick={handleTeamClick} />}
                 {currentView === 'scorers' && <ScorersView data={data} />}
                 {currentView === 'teams' && <TeamsView data={data} />}
             </main>

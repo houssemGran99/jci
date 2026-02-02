@@ -10,6 +10,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     const [matches, setMatches] = useState(initialData.matches);
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [scorerSelection, setScorerSelection] = useState<{ teamId: number, side: 'home' | 'away' } | null>(null);
     const editSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -44,6 +46,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     });
 
     const handleSaveMatch = async () => {
+        setIsLoading(true);
         try {
             if (isEditing && selectedMatch) {
                 const updated = await updateMatch(selectedMatch.id, matchForm);
@@ -58,6 +61,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
         } catch (err) {
             alert('Erreur lors de l\'enregistrement du match');
             console.error(err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -67,6 +72,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             title: 'Supprimer le Match',
             message: 'Êtes-vous sûr de vouloir supprimer ce match ?',
             onConfirm: async () => {
+                setIsLoading(true);
                 try {
                     await deleteMatch(id);
                     setMatches(matches.filter(m => m.id !== id));
@@ -76,6 +82,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                     }
                 } catch (err) {
                     alert('Erreur lors de la suppression du match');
+                } finally {
+                    setIsLoading(false);
                 }
                 setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
@@ -110,6 +118,30 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
         setMatchForm({ ...matchForm, cards: newCards });
     };
 
+    const handleGoalClick = (teamId: number, side: 'home' | 'away') => {
+        setScorerSelection({ teamId, side });
+    };
+
+    const handleScorerSelected = (playerId: number | null) => {
+        if (!scorerSelection) return;
+
+        const { side } = scorerSelection;
+        const newScore = (side === 'home' ? (matchForm.scoreHome ?? 0) : (matchForm.scoreAway ?? 0)) + 1;
+
+        const updates: Partial<Match> = {
+            ...matchForm,
+            scoreHome: side === 'home' ? newScore : matchForm.scoreHome,
+            scoreAway: side === 'away' ? newScore : matchForm.scoreAway,
+        };
+
+        if (playerId) {
+            updates.scorers = [...(matchForm.scorers || []), { playerId }];
+        }
+
+        setMatchForm(updates);
+        setScorerSelection(null);
+    };
+
 
 
     const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
@@ -135,6 +167,43 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                 onCancel={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
                 isDestructive={true}
             />
+
+            {/* Scorer Selection Modal */}
+            {scorerSelection && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-white/10 rounded-xl p-6 w-full max-w-sm shadow-2xl">
+                        <h3 className="text-xl font-bold mb-4 text-center">Qui a marqué ?</h3>
+                        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                            <button
+                                onClick={() => handleScorerSelected(null)}
+                                className="w-full text-left p-3 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/20 transition flex justify-between items-center"
+                            >
+                                <span className="italic text-muted">Inconnu / Autre</span>
+                                <span>⚽</span>
+                            </button>
+                            {initialData.players
+                                .filter(p => p.teamId === scorerSelection.teamId)
+                                .map(player => (
+                                    <button
+                                        key={player.id}
+                                        onClick={() => handleScorerSelected(player.id)}
+                                        className="w-full text-left p-3 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/20 transition font-bold"
+                                    >
+                                        {player.name}
+                                    </button>
+                                ))
+                            }
+                        </div>
+                        <button
+                            onClick={() => setScorerSelection(null)}
+                            className="w-full mt-4 py-2 text-sm text-red-400 hover:text-red-300"
+                        >
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Match List */}
             <div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
@@ -214,7 +283,12 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                 </div>
                 <div className="pt-4 mt-4 border-t border-white/10">
                     <button
-                        onClick={() => { setSelectedMatch(null); setIsEditing(false); setMatchForm(defaultForm); }}
+                        onClick={() => {
+                            setSelectedMatch(null);
+                            setIsEditing(false);
+                            setMatchForm(defaultForm);
+                            editSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                        }}
                         className="w-full py-2 border border-dashed border-white/30 rounded text-muted hover:text-white hover:border-white"
                     >
                         + Planifier un nouveau match
@@ -227,7 +301,9 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold">{isEditing ? `Modifier le Match #${selectedMatch?.id}` : 'Nouveau Match'}</h3>
                     {isEditing && (
-                        <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-red-400 text-sm hover:underline">Supprimer le Match</button>
+                        <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-red-400 text-sm hover:underline disabled:opacity-50" disabled={isLoading}>
+                            {isLoading ? 'Suppression...' : 'Supprimer le Match'}
+                        </button>
                     )}
                 </div>
 
@@ -290,14 +366,15 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                 <button
                                     className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
                                     onClick={() => setMatchForm({ ...matchForm, scoreHome: Math.max(0, (matchForm.scoreHome ?? 0) - 1) })}
-                                    disabled={(matchForm.scoreHome ?? 0) <= 0}
+                                    disabled={(matchForm.scoreHome ?? 0) <= 0 || matchForm.status === 'completed'}
                                 >
                                     -
                                 </button>
                                 <span className="text-xl font-bold w-8 text-center">{matchForm.scoreHome ?? '-'}</span>
                                 <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold"
-                                    onClick={() => setMatchForm({ ...matchForm, scoreHome: (matchForm.scoreHome ?? -1) + 1 })}
+                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold disabled:opacity-50"
+                                    onClick={() => matchForm.teamHomeId && handleGoalClick(matchForm.teamHomeId, 'home')}
+                                    disabled={matchForm.status === 'completed'}
                                 >
                                     +
                                 </button>
@@ -319,14 +396,15 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                 <button
                                     className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
                                     onClick={() => setMatchForm({ ...matchForm, scoreAway: Math.max(0, (matchForm.scoreAway ?? 0) - 1) })}
-                                    disabled={(matchForm.scoreAway ?? 0) <= 0}
+                                    disabled={(matchForm.scoreAway ?? 0) <= 0 || matchForm.status === 'completed'}
                                 >
                                     -
                                 </button>
                                 <span className="text-xl font-bold w-8 text-center">{matchForm.scoreAway ?? '-'}</span>
                                 <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold"
-                                    onClick={() => setMatchForm({ ...matchForm, scoreAway: (matchForm.scoreAway ?? -1) + 1 })}
+                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold disabled:opacity-50"
+                                    onClick={() => matchForm.teamAwayId && handleGoalClick(matchForm.teamAwayId, 'away')}
+                                    disabled={matchForm.status === 'completed'}
                                 >
                                     +
                                 </button>
@@ -340,19 +418,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             {/* Scorers */}
                             {/* Scorers */}
                             <div className="border border-white/10 rounded p-4">
-                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
-                                    <label className="text-xs uppercase font-bold">Buts</label>
-                                    <select
-                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto"
-                                        onChange={(e) => { if (e.target.value) addScorer(parseInt(e.target.value)); e.target.value = ''; }}
-                                    >
-                                        <option value="">+ Ajouter Buteur</option>
-                                        {getMatchPlayers().map(p => {
-                                            const team = initialData.teams.find(t => t.id === p.teamId);
-                                            return <option key={p.id} value={p.id}>{p.name} ({team?.name})</option>;
-                                        })}
-                                    </select>
-                                </div>
+    
                                 <div className="space-y-2">
                                     {matchForm.scorers?.map((scorer, i) => {
                                         const p = initialData.players.find(pl => pl.id === scorer.playerId);
@@ -360,7 +426,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                         return (
                                             <div key={i} className="flex gap-2 items-center text-sm bg-white/5 p-1 rounded">
                                                 <span className="flex-1">{p?.name} <span className="text-xs opacity-50 ml-1">({team?.name})</span></span>
-                                                <button onClick={() => removeScorer(i)} className="text-red-400 px-2">×</button>
+                                                <button onClick={() => removeScorer(i)} className="text-red-400 px-2 disabled:opacity-50" disabled={matchForm.status === 'completed'}>×</button>
                                             </div>
                                         );
                                     })}
@@ -372,8 +438,9 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
                                     <label className="text-xs uppercase font-bold text-yellow-400">Cartons</label>
                                     <select
-                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto"
+                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto disabled:opacity-50"
                                         onChange={(e) => { if (e.target.value) addCard(parseInt(e.target.value)); e.target.value = ''; }}
+                                        disabled={matchForm.status === 'completed'}
                                     >
                                         <option value="">+ Ajouter Carton</option>
                                         {getMatchPlayers().map(p => {
@@ -401,7 +468,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                                     <option value="yellow">Jaune</option>
                                                     <option value="red">Rouge</option>
                                                 </select>
-                                                <button onClick={() => removeCard(i)} className="text-red-400 px-2">×</button>
+                                                <button onClick={() => removeCard(i)} className="text-red-400 px-2 disabled:opacity-50" disabled={matchForm.status === 'completed'}>×</button>
                                             </div>
                                         );
                                     })}
@@ -412,13 +479,14 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
                     <button
                         onClick={handleSaveMatch}
-                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 transition mt-6"
+                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 transition mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading}
                     >
-                        {isEditing ? 'Mettre à jour les résultats' : 'Planifier le match'}
+                        {isLoading ? 'Chargement...' : (isEditing ? 'Mettre à jour les résultats' : 'Planifier le match')}
                     </button>
 
                 </div>
-            </div>
+            </div >
         </div >
     );
 }
