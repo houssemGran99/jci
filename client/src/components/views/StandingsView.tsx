@@ -13,56 +13,44 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
     const groups = ['A', 'B'];
 
     return (
-        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-white border-l-4 border-primary pl-4 flex items-center justify-between">
-                <span>Classement des Groupes</span>
-                <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground bg-black/20 px-3 py-1 rounded-full border border-white/5">
-
-                </div>
-            </h2>
-
+        <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 font-sans">
             {groups.map(group => {
                 const groupTeams = standings.filter(t => t.group === group);
                 return (
-                    <div key={group} className="bg-card border border-white/10 rounded-xl overflow-hidden shadow-lg">
-                        <div className="px-6 py-4 bg-white/5 border-b border-white/10 font-bold text-lg">Groupe {group}</div>
-                        <div className="overflow-x-auto pb-2">
-                            <table className="w-full min-w-[600px] border-collapse">
+                    <div key={group} className="border border-white/5 rounded-lg overflow-hidden bg-white/[0.01]">
+                        <div className="px-3 py-1.5 border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-white">Groupe {group}</div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[10px]">
                                 <thead>
-                                    <tr className="bg-mesh text-muted text-xs uppercase tracking-wider text-center">
-                                        <th className="p-3 sticky left-0 z-10 bg-mesh w-10 border-r border-white/10">Pos</th>
-                                        <th className="p-3 text-left sticky left-10 z-10 bg-mesh border-r border-white/10 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">Équipe</th>
-                                        <th className="p-3">J</th>
-                                        <th className="p-3">G</th>
-                                        <th className="p-3">N</th>
-                                        <th className="p-3">P</th>
-                                        <th className="p-3">BP</th>
-                                        <th className="p-3">BC</th>
-                                        <th className="p-3">Diff</th>
-                                        <th className="p-3 sticky right-0 z-10 bg-mesh border-l border-white/10 shadow-[-2px_0_5px_rgba(0,0,0,0.1)]">Pts</th>
+                                    <tr className="border-b border-white/5 text-white/30 uppercase tracking-wider text-center">
+                                        <th className="py-2 px-1 w-6 font-medium">#</th>
+                                        <th className="py-2 px-1 text-left font-medium">Team</th>
+                                        <th className="py-2 px-1 w-6 font-medium">J</th>
+                                        <th className="py-2 px-1 w-6 font-medium text-white/20">G</th>
+                                        <th className="py-2 px-1 w-6 font-medium text-white/20">N</th>
+                                        <th className="py-2 px-1 w-6 font-medium text-white/20">P</th>
+                                        <th className="py-2 px-1 w-6 font-medium">Diff</th>
+                                        <th className="py-2 px-2 w-8 font-bold text-white/70">Pts</th>
                                     </tr>
                                 </thead>
-                                <tbody className="text-sm">
+                                <tbody>
                                     {groupTeams.map((t, i) => (
-                                        <tr key={t.id} className={`border-b border-white/5 hover:bg-white/5 transition group ${i < 2 || i >= groupTeams.length - 2 ? 'bg-white/5' : ''}`}>
-                                            <td className={`p-3 text-center font-bold sticky left-0 z-10 bg-card group-hover:bg-white/5 border-r border-white/10 ${i === 0 ? 'text-primary' : i === 1 ? 'text-secondary' : i >= groupTeams.length - 2 ? 'text-red-500' : 'text-muted'} ${i < 2 ? 'shadow-[inset_4px_0_0_#10b981]' : i >= groupTeams.length - 2 ? 'shadow-[inset_4px_0_0_#ef4444]' : ''}`}>
+                                        <tr key={t.id} className="border-b border-white/5 hover:bg-white/5 transition group cursor-pointer" onClick={() => onTeamClick(t.id)}>
+                                            <td className={`py-1.5 px-1 text-center font-bold ${i < 2 ? 'text-emerald-500' : 'text-white/20'}`}>
                                                 {i + 1}
                                             </td>
-                                            <td className="p-3 font-semibold sticky left-10 z-10 bg-card group-hover:bg-white/5 border-r border-white/10 shadow-[2px_0_5px_rgba(0,0,0,0.1)] cursor-pointer" onClick={() => onTeamClick(t.id)}>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">{t.logo}</div>
-                                                    <span className="truncate max-w-[120px]">{t.name}</span>
-
+                                            <td className="py-1.5 px-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-[10px] opacity-70 grayscale group-hover:grayscale-0 transition">{t.logo}</span>
+                                                    <span className={`font-medium break-words leading-tight ${i < 2 ? 'text-white' : 'text-white/70'}`}>{t.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="p-3 text-center">{t.played}</td>
-                                            <td className="p-3 text-center">{t.won}</td>
-                                            <td className="p-3 text-center">{t.drawn}</td>
-                                            <td className="p-3 text-center">{t.lost}</td>
-                                            <td className="p-3 text-center">{t.gf}</td>
-                                            <td className="p-3 text-center">{t.ga}</td>
-                                            <td className="p-3 text-center">{t.gd && t.gd > 0 ? `+${t.gd}` : t.gd}</td>
-                                            <td className="p-3 text-center font-bold text-white sticky right-0 z-10 bg-card/50 group-hover:bg-white/5 border-l border-white/10 backdrop-blur-sm">{t.points}</td>
+                                            <td className="py-1.5 px-1 text-center text-white/60">{t.played}</td>
+                                            <td className="py-1.5 px-1 text-center text-white/30">{t.won}</td>
+                                            <td className="py-1.5 px-1 text-center text-white/30">{t.drawn}</td>
+                                            <td className="py-1.5 px-1 text-center text-white/30">{t.lost}</td>
+                                            <td className="py-1.5 px-1 text-center text-white/50">{(t.gd ?? 0) > 0 ? `+${t.gd}` : (t.gd ?? 0)}</td>
+                                            <td className="py-1.5 px-2 text-center font-bold text-white bg-white/5">{t.points}</td>
                                         </tr>
                                     ))}
                                 </tbody>

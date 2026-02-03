@@ -14,7 +14,7 @@ import { io } from 'socket.io-client';
 type View = 'standings' | 'matches' | 'scorers' | 'teams' | 'bracket';
 
 export default function Dashboard({ data }: { data: AppData }) {
-    const [currentView, setCurrentView] = useState<View>('standings');
+    const [currentView, setCurrentView] = useState<View>('matches');
     const [appData, setAppData] = useState<AppData>(data);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
@@ -33,10 +33,37 @@ export default function Dashboard({ data }: { data: AppData }) {
         if (team) setSelectedTeam(team);
     };
 
+    const playGoalSound = () => {
+        try {
+            // Simple beep using Web Audio API
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine'; // deeply satisfying beep
+            osc.frequency.setValueAtTime(880, ctx.currentTime); // High pitch
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1); // Drop quickly
+
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+            console.error("Audio error:", e);
+        }
+    };
+
     useEffect(() => {
         // Ensure we connect to the server root, not the /api path
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-        const socketUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+        const socketUrl = apiUrl.replace(/\/api\/?$/, ''); // Removes /api or /api/ from the end
 
         console.log('Connecting to socket at:', socketUrl);
         const socket = io(socketUrl, {
@@ -55,6 +82,18 @@ export default function Dashboard({ data }: { data: AppData }) {
             console.log('Received matchUpdated:', updatedMatch);
             setAppData(prev => {
                 const matchExists = prev.matches.find(m => m.id === updatedMatch.id);
+
+                // Check for score change to play sound
+                // The '/goal.mp3' file should be in the public directory.
+                if (matchExists) {
+                    const scoreChanged = (matchExists.scoreHome !== updatedMatch.scoreHome) ||
+                        (matchExists.scoreAway !== updatedMatch.scoreAway);
+                    // Only play sound if match is in progress and score changed
+                    if (scoreChanged && updatedMatch.status === 'inprogress') {
+                        playGoalSound();
+                    }
+                }
+
                 let newMatches;
                 if (matchExists) {
                     newMatches = prev.matches.map(m => m.id === updatedMatch.id ? updatedMatch : m);
@@ -89,12 +128,12 @@ export default function Dashboard({ data }: { data: AppData }) {
             {/* Mobile Sidebar */}
             <div className={`fixed top-0 left-0 h-full w-[80%] max-w-[300px] bg-[#0a0a0a] border-r border-white/10 z-[70] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-3 mb-10 pl-2">
-                        <img src="/jci-logo.png" className="h-10 w-auto object-contain" alt="Logo" />
-                        <span className="font-bold text-lg leading-tight tracking-tight">Beni Hassen<br />Tkawer</span>
+                    <div className="flex items-center gap-3 mb-8 pl-2 font-sans">
+                        <img src="/jci-logo.png" className="h-8 w-auto object-contain" alt="Logo" />
+                        <span className="font-bold text-sm uppercase tracking-wider leading-tight text-white/90">Beni Hassen<br />Tkawer</span>
                     </div>
 
-                    <ul className="flex flex-col gap-2">
+                    <ul className="flex flex-col gap-1 font-sans">
                         {menuItems.map(item => (
                             <li
                                 key={item.id}
@@ -102,9 +141,9 @@ export default function Dashboard({ data }: { data: AppData }) {
                                     setCurrentView(item.id as View);
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className={`p-4 rounded-xl font-medium transition-all cursor-pointer flex items-center gap-4 ${currentView === item.id ? 'bg-primary/20 text-primary border border-primary/20' : 'text-muted hover:text-white hover:bg-white/5'}`}
+                                className={`px-4 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-3 ${currentView === item.id ? 'bg-primary/20 text-primary border border-primary/20' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
                             >
-                                <span className="text-xl opacity-80">{item.icon}</span>
+                                <span className="text-sm opacity-80">{item.icon}</span>
                                 <span>{item.mobileLabel}</span>
                             </li>
                         ))}
@@ -117,17 +156,17 @@ export default function Dashboard({ data }: { data: AppData }) {
             </div>
 
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-0 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="w-full md:w-auto flex justify-start gap-4 items-center px-4 md:px-0">
+            <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-0 py-0 flex flex-col md:flex-row justify-between items-center gap-0">
+                <div className="w-full md:w-auto flex justify-start items-center relative md:static">
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
-                        className="md:hidden p-2 -ml-2 text-white/80 hover:text-white transition active:scale-95"
+                        className="md:hidden absolute left-4 z-10 p-2 text-white drop-shadow-md hover:text-white/80 transition active:scale-95 bg-black/20 rounded-full"
                     >
                         <span className="text-2xl">☰</span>
                     </button>
-                    <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-2">
-                        <img src="/jci-logo.png" alt="Logo" className="h-12 w-auto object-contain" />
-                        Beni Hassen Tkawer
+                    <div className="w-full h-24 md:h-20 overflow-hidden relative">
+                        <img src="/banner.jpg" alt="Banner" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent md:hidden"></div>
                     </div>
                 </div>
 

@@ -45,76 +45,77 @@ export default function MatchDetailsModal({ match, data, onClose }: MatchDetails
     const awayCards = getCards(match.teamAwayId);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card border border-white/10 rounded-2xl w-full max-w-md shadow-2xl relative animate-in zoom-in-50 duration-200">
-                <button
-                    onClick={onClose}
-                    className="absolute top-3 right-3 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition"
-                >
-                    ✕
-                </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-[#0f1218] border border-white/5 rounded-xl w-full max-w-sm shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] relative animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
 
-                <div className="p-6 text-center border-b border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex flex-col items-center w-1/3">
-                            <span className="text-4xl mb-2">{homeTeam?.logo}</span>
-                            <span className="text-sm font-bold w-full text-center leading-tight">{homeTeam?.name}</span>
+                {/* Header Section */}
+                <div className="p-5 pb-4 border-b border-white/5">
+                    <div className="flex items-center justify-between">
+                        {/* Home Team */}
+                        <div className="flex flex-col items-center w-[30%]">
+                            <span className="text-3xl mb-1.5 filter drop-shadow-lg">{homeTeam?.logo}</span>
+                            <span className="text-[10px] font-sans font-medium uppercase tracking-wide text-white/90 text-center leading-3 w-full break-words">{homeTeam?.name}</span>
                         </div>
-                        <div className="flex flex-col items-center">
-                            <span className="text-4xl font-black tracking-widest bg-white/5 px-4 py-1 rounded-lg">
-                                {match.scoreHome}-{match.scoreAway}
-                            </span>
-                            {match.status === 'inprogress' && (
-                                <span className="text-[10px] uppercase font-bold text-red-500 animate-pulse mt-1">Live</span>
+
+                        {/* Score Board */}
+                        <div className="flex flex-col items-center justify-center">
+                            <div className="font-sans text-3xl font-bold tracking-tighter text-white tabular-nums flex items-center gap-1">
+                                <span>{match.status === 'scheduled' ? '-' : match.scoreHome}</span>
+                                <span className="text-white/20 text-2xl font-light"> - </span>
+                                <span>{match.status === 'scheduled' ? '-' : match.scoreAway}</span>
+                            </div>
+                            {match.status === 'inprogress' ? (
+                                <span className="text-[9px] font-sans font-bold text-red-500 uppercase tracking-widest mt-0.5 animate-pulse">Live</span>
+                            ) : (
+                                <span className="text-[9px] font-sans font-medium text-white/30 uppercase tracking-widest mt-0.5">Full Time</span>
                             )}
                         </div>
-                        <div className="flex flex-col items-center w-1/3">
-                            <span className="text-4xl mb-2">{awayTeam?.logo}</span>
-                            <span className="text-sm font-bold w-full text-center leading-tight">{awayTeam?.name}</span>
+
+                        {/* Away Team */}
+                        <div className="flex flex-col items-center w-[30%]">
+                            <span className="text-3xl mb-1.5 filter drop-shadow-lg">{awayTeam?.logo}</span>
+                            <span className="text-[10px] font-sans font-medium uppercase tracking-wide text-white/90 text-center leading-3 w-full break-words">{awayTeam?.name}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="p-6 grid grid-cols-2 gap-4">
-                    {/* Home Events */}
-                    <div className="space-y-3">
-                        {homeScorers.length === 0 && homeCards.length === 0 && <div className="text-muted text-xs text-center italic opacity-50">-</div>}
+                {/* Events Section */}
+                <div className="px-5 py-4 min-h-[100px] flex items-stretch">
+
+                    {/* Home Side */}
+                    <div className="flex-1 space-y-2 border-r border-white/5 pr-4">
                         {homeScorers.map((s, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm">
-                                <span className="flex items-center gap-1">
-                                    <span>⚽</span>
-                                    {s.count > 1 && <span className="text-muted font-bold">x{s.count}</span>}
-                                </span>
-                                <span className="font-medium">{s.name}</span>
+                            <div key={i} className="flex items-center gap-2 justify-end text-right">
+                                <span className="text-[11px] font-sans text-white/70 font-medium">{s.name}</span>
+                                <span className="text-[10px] text-emerald-400">⚽{s.count > 1 ? ` x${s.count}` : ''}</span>
                             </div>
                         ))}
                         {homeCards.map((c, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm">
-                                <div className={`w-3 h-4 rounded-[2px] ${c.type === 'yellow' ? 'bg-yellow-400' : 'bg-red-500'}`}></div>
-                                <span className="text-muted">{c.name}</span>
+                            <div key={i} className="flex items-center gap-2 justify-end text-right">
+                                <span className="text-[11px] font-sans text-white/50">{c.name}</span>
+                                <div className={`w-2 h-3 rounded-[1px] ${c.type === 'yellow' ? 'bg-yellow-500/80 shadow-[0_0_5px_rgba(234,179,8,0.4)]' : 'bg-red-500/80 shadow-[0_0_5px_rgba(239,68,68,0.4)]'}`}></div>
                             </div>
                         ))}
+                        {homeScorers.length === 0 && homeCards.length === 0 && <div className="h-full flex items-center justify-end"><span className="text-white/5 text-xs">-</span></div>}
                     </div>
 
-                    {/* Away Events */}
-                    <div className="space-y-3 text-right">
-                        {awayScorers.length === 0 && awayCards.length === 0 && <div className="text-muted text-xs text-center italic opacity-50">-</div>}
+                    {/* Away Side */}
+                    <div className="flex-1 space-y-2 pl-4">
                         {awayScorers.map((s, i) => (
-                            <div key={i} className="flex items-center justify-end gap-2 text-sm">
-                                <span className="font-medium">{s.name}</span>
-                                <span className="flex items-center gap-1">
-                                    <span>⚽</span>
-                                    {s.count > 1 && <span className="text-muted font-bold">x{s.count}</span>}
-                                </span>
+                            <div key={i} className="flex items-center gap-2 justify-start text-left">
+                                <span className="text-[10px] text-emerald-400">⚽{s.count > 1 ? ` x${s.count}` : ''}</span>
+                                <span className="text-[11px] font-sans text-white/70 font-medium">{s.name}</span>
                             </div>
                         ))}
                         {awayCards.map((c, i) => (
-                            <div key={i} className="flex items-center justify-end gap-2 text-sm">
-                                <span className="text-muted">{c.name}</span>
-                                <div className={`w-3 h-4 rounded-[2px] ${c.type === 'yellow' ? 'bg-yellow-400' : 'bg-red-500'}`}></div>
+                            <div key={i} className="flex items-center gap-2 justify-start text-left">
+                                <div className={`w-2 h-3 rounded-[1px] ${c.type === 'yellow' ? 'bg-yellow-500/80 shadow-[0_0_5px_rgba(234,179,8,0.4)]' : 'bg-red-500/80 shadow-[0_0_5px_rgba(239,68,68,0.4)]'}`}></div>
+                                <span className="text-[11px] font-sans text-white/50">{c.name}</span>
                             </div>
                         ))}
+                        {awayScorers.length === 0 && awayCards.length === 0 && <div className="h-full flex items-center justify-start"><span className="text-white/5 text-xs">-</span></div>}
                     </div>
+
                 </div>
             </div>
         </div>

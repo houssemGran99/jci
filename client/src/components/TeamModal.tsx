@@ -9,26 +9,38 @@ interface TeamModalProps {
 
 export default function TeamModal({ team, players, onClose }: TeamModalProps) {
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in" onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="bg-card w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl p-8 relative overflow-hidden animate-in zoom-in-95 duration-200">
-                <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-white text-2xl">&times;</button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in" onClick={(e) => e.target === e.currentTarget && onClose()}>
+            <div className="bg-[#0f1218] w-full max-w-sm rounded-xl border border-white/5 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-5 relative overflow-hidden animate-in zoom-in-95 duration-200 font-sans">
 
-                <div className="text-center mb-8 relative z-10">
-                    <div className="text-7xl mb-4 transform hover:scale-110 transition duration-300">{team.logo}</div>
-                    <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-700 mb-2" style={{ color: team.colors[0] }}>{team.name}</h2>
-                    <div className="text-muted">Groupe {team.group}</div>
+                {/* Header */}
+                <div className="flex flex-col items-center mb-6">
+                    <div className="text-5xl mb-3 filter drop-shadow-lg">{team.logo}</div>
+                    <h2 className="text-lg font-bold text-white tracking-wide text-center leading-tight mb-1" style={{ color: team.colors[0] }}>{team.name}</h2>
+                    <div className="text-[10px] font-medium uppercase tracking-widest text-white/30 bg-white/5 px-2 py-0.5 rounded">Groupe {team.group}</div>
                 </div>
 
-                <h3 className="text-lg font-semibold border-b border-white/10 pb-2 mb-4">Effectif</h3>
-                <div className="grid grid-cols-2 gap-3 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                    {players.filter(p => p.teamId === team.id).map(p => (
-                        <div key={p.id} className={`bg-white/5 p-3 rounded-lg border-l-4 ${p.isCaptain ? 'border-accent' : 'border-transparent'} hover:bg-white/10 transition`}>
-                            <div className={`font-medium text-sm flex items-center gap-1 ${p.isCaptain ? 'text-accent' : 'text-white'}`}>
-                                {p.name} {p.isCaptain && <span className="text-yellow-400">©</span>}
+                {/* Squad List */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Effectif</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Buts</span>
+                    </div>
+
+                    <div className="max-h-[40vh] overflow-y-auto pr-1 space-y-1 custom-scrollbar">
+                        {players.filter(p => p.teamId === team.id).map(p => (
+                            <div key={p.id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-white/5 transition group">
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-[11px] font-medium ${p.isCaptain ? 'text-accent' : 'text-white/80'}`}>
+                                        {p.name}
+                                    </span>
+                                    {p.isCaptain && <span className="text-[9px] px-1 rounded bg-yellow-500/20 text-yellow-500 font-bold">C</span>}
+                                </div>
+                                <span className={`text-[10px] font-mono ${p.goals > 0 ? 'text-emerald-400 font-bold' : 'text-white/20'}`}>
+                                    {p.goals > 0 ? p.goals : '-'}
+                                </span>
                             </div>
-                            <div className="text-xs text-muted mt-1">{p.goals} Buts</div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
