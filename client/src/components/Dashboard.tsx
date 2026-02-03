@@ -23,7 +23,7 @@ export default function Dashboard({ data }: { data: AppData }) {
     const menuItems = [
         { id: 'standings', label: 'Classement', mobileLabel: 'Classement', icon: '📊' },
         { id: 'matches', label: 'Matchs', mobileLabel: 'Matchs', icon: '⚽' },
-        { id: 'bracket', label: '🏆', mobileLabel: 'Phase Finale', icon: '🏆' },
+        { id: 'bracket', label: 'Tableau', mobileLabel: 'Tableau', icon: '🏆' },
         { id: 'scorers', label: 'Buteurs', mobileLabel: 'Buteurs', icon: '👟' },
         { id: 'teams', label: 'Équipes', mobileLabel: 'Équipes', icon: '👕' }
     ];
