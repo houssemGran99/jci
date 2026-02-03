@@ -7,6 +7,7 @@
 
 @theme {
   --font-rubik: var(--font-rubik);
+  --font-opensans: var(--font-open-sans);
 
   /* New Green/Orange Theme */
   --color-dark: #005031;

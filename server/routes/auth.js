@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_key_123';
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
-        const token = jwt.sign({ username: username, role: 'admin' }, JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ username: username, role: 'admin' }, JWT_SECRET, { expiresIn: '30d' });
         res.json({ success: true, token });
     } else {
         res.status(401).json({ success: false, message: 'Invalid credentials' });

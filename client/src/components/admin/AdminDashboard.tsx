@@ -30,9 +30,8 @@ export default function AdminDashboard({ data }: { data: AppData }) {
         <div className="min-h-screen bg-dark text-white p-6">
             <header className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                 <div className="flex flex-col md:flex-row items-center gap-4">
-                    <img src="/jci.png" alt="Logo" className="w-16 h-16 object-contain" />
-                    <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-2">
-                        <img src="/jci-logo.png" alt="Logo" className="h-10 w-auto" />
+                    <div className="text-2xl font-bold text-white flex items-center gap-3">
+                        <img src="/jci-logo.png" alt="Logo" className="h-20 w-auto" />
                         Beni Hassen Tkawer - Admin
                     </div>
                 </div>
