@@ -1,6 +1,6 @@
-
-import { AppData } from "@/lib/types";
-import { useMemo } from 'react';
+import { AppData, Match } from "@/lib/types";
+import { useMemo, useState } from 'react';
+import MatchDetailsModal from '../MatchDetailsModal';
 
 interface MatchesViewProps {
     data: AppData;
@@ -10,6 +10,8 @@ interface MatchesViewProps {
 }
 
 export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamClick }: MatchesViewProps) {
+    const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+
     const sortedMatches = useMemo(() => {
         let filtered = data.matches;
         if (selectedDay === 'today') {
@@ -24,6 +26,10 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
             return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
     }, [data.matches, selectedDay]);
+
+    const activeMatch = useMemo(() =>
+        selectedMatchId ? data.matches.find(m => m.id === selectedMatchId) : null
+        , [data.matches, selectedMatchId]);
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -98,7 +104,10 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
                                     {m.status === 'completed' || m.status === 'inprogress' ? (
                                         <div className="flex flex-col items-center shrink-0">
-                                            <div className={`px-6 py-2 bg-black border-2 ${m.status === 'inprogress' ? 'border-red-500/50 shadow-red-500/20' : 'border-slate-800 shadow-accent/10'} rounded-lg mx-2 shadow-lg min-w-[140px] flex items-center justify-center relative`}>
+                                            <div
+                                                className={`px-6 py-2 bg-black border-2 ${m.status === 'inprogress' ? 'border-red-500/50 shadow-red-500/20 cursor-pointer hover:scale-105 transition active:scale-95' : 'border-slate-800 shadow-accent/10'} rounded-lg mx-2 shadow-lg min-w-[140px] flex items-center justify-center relative`}
+                                                onClick={() => m.status === 'inprogress' && setSelectedMatchId(m.id)}
+                                            >
                                                 {m.status === 'inprogress' && <span className="absolute -top-1 -right-1 flex h-3 w-3">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -161,6 +170,7 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
                     })
                 )}
             </div>
+            {activeMatch && <MatchDetailsModal match={activeMatch} data={data} onClose={() => setSelectedMatchId(null)} />}
         </div>
     );
 }

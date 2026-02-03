@@ -31,9 +31,10 @@ export default function AdminDashboard({ data }: { data: AppData }) {
             <header className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <img src="/jci.png" alt="Logo" className="w-16 h-16 object-contain" />
-                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent uppercase tracking-wider">
-                        Tableau de Bord Admin
-                    </h1>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-2">
+                        <img src="/jci-logo.png" alt="Logo" className="h-10 w-auto" />
+                        Beni Hassen Tkawer - Admin
+                    </div>
                 </div>
                 <div className="flex items-center gap-4 w-full md:w-auto justify-center">
                     <button onClick={logout} className="text-xs md:text-sm bg-white/10 hover:bg-white/20 px-3 py-2 rounded text-white transition">Déconnexion</button>

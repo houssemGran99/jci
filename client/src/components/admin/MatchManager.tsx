@@ -55,13 +55,14 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             if (isEditing && selectedMatch) {
                 const updated = await updateMatch(selectedMatch.id, matchForm);
                 setMatches(matches.map(m => m.id === updated.id ? updated : m));
+                // Optional: Show success feedback
             } else {
                 const created = await createMatch(matchForm);
                 setMatches([...matches, created]);
+                setMatchForm(defaultForm);
+                setIsEditing(false);
+                setSelectedMatch(null);
             }
-            setMatchForm(defaultForm);
-            setIsEditing(false);
-            setSelectedMatch(null);
         } catch (err) {
             alert('Erreur lors de l\'enregistrement du match');
             console.error(err);
@@ -264,7 +265,11 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                     </select>
                 </div>
                 <div className="space-y-3 max-h-[700px] overflow-y-auto">
-                    {filteredMatches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(match => {
+                    {filteredMatches.sort((a, b) => {
+                        if (a.status === 'inprogress' && b.status !== 'inprogress') return -1;
+                        if (b.status === 'inprogress' && a.status !== 'inprogress') return 1;
+                        return new Date(b.date).getTime() - new Date(a.date).getTime();
+                    }).map(match => {
                         const home = initialData.teams.find(t => t.id === match.teamHomeId);
                         const away = initialData.teams.find(t => t.id === match.teamAwayId);
                         return (
@@ -459,16 +464,38 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             <div className="border border-white/10 rounded p-4">
 
                                 <div className="space-y-2">
-                                    {matchForm.scorers?.map((scorer, i) => {
-                                        const p = initialData.players.find(pl => pl.id === scorer.playerId);
-                                        const team = initialData.teams.find(t => t.id === p?.teamId);
-                                        return (
-                                            <div key={i} className="flex gap-2 items-center text-sm bg-white/5 p-1 rounded">
-                                                <span className="flex-1">{p?.name} <span className="text-xs opacity-50 ml-1">({team?.name})</span></span>
-                                                <button onClick={() => removeScorer(i)} className="text-red-400 px-2 disabled:opacity-50" disabled={matchForm.status === 'completed'}>×</button>
-                                            </div>
-                                        );
-                                    })}
+                                    {(() => {
+                                        const scorerCounts: Record<number, number> = {};
+                                        matchForm.scorers?.forEach(s => scorerCounts[s.playerId] = (scorerCounts[s.playerId] || 0) + 1);
+
+                                        return Object.entries(scorerCounts).map(([idStr, count]) => {
+                                            const pid = parseInt(idStr);
+                                            const p = initialData.players.find(pl => pl.id === pid);
+                                            const team = initialData.teams.find(t => t.id === p?.teamId);
+                                            return (
+                                                <div key={pid} className="flex gap-2 items-center text-sm bg-white/5 p-1 rounded">
+                                                    <span className="flex-1 font-bold flex items-center gap-2">
+                                                        <span>{p?.name}</span>
+                                                        <span className="text-xs opacity-50 font-normal">({team?.name})</span>
+                                                        <span className="ml-auto flex items-center gap-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">
+                                                            <span>⚽</span>
+                                                            {count > 1 && <span className="ml-1 text-white font-bold">x{count}</span>}
+                                                        </span>
+                                                    </span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const idx = matchForm.scorers?.findIndex(s => s.playerId === pid);
+                                                            if (idx !== undefined && idx !== -1) removeScorer(idx);
+                                                        }}
+                                                        className="text-red-400 px-2 hover:bg-red-500/10 rounded disabled:opacity-50"
+                                                        disabled={matchForm.status === 'completed'}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
                                 </div>
                             </div>
 

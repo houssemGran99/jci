@@ -29,10 +29,10 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-dark text-white flex items-center justify-center p-6">
-            <div className="bg-card p-8 rounded-2xl border border-white/10 shadow-2xl w-full max-w-md">
-                <div className="text-center mb-8">
-                    <img src="/jci.png" alt="Logo" className="w-20 h-20 object-contain mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold">Connexion Admin</h1>
+            <div className="bg-card p-8 rounded-2xl border border-white/10 w-full max-w-md shadow-2xl animate-in zoom-in-50 duration-500">
+                <div className="flex flex-col items-center mb-8">
+                    <img src="/jci-logo.png" alt="Logo" className="h-20 w-auto mb-4" />
+                    <h1 className="text-2xl font-bold text-center">Admin Login</h1>
                 </div>
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div>

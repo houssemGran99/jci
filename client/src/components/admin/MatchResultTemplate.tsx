@@ -64,9 +64,17 @@ const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>
                         STADE<br />SIDI SALEM
                     </div>
                 </div>
+                {/* The following div was removed:
                 <div>
                     <img src="/jci.png" className="h-20 w-auto drop-shadow-lg" alt="JCI Logo" />
                 </div>
+                */}
+            </div>
+
+            {/* Header / Logo */}
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
+                <img src="/jci-logo.png" alt="Logo" className="h-24 w-auto mb-2 drop-shadow-xl animate-pulse-slow" />
+                <h1 className="text-3xl font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 drop-shadow-sm">JCI Beni Hassen</h1>
             </div>
 
             {/* Main Title */}
