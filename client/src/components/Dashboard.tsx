@@ -63,12 +63,13 @@ export default function Dashboard({ data }: { data: AppData }) {
     useEffect(() => {
         // Ensure we connect to the server root, not the /api path
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-        const socketUrl = apiUrl.replace(/\/api\/?$/, ''); // Removes /api or /api/ from the end
+
+    
+        const socketUrl = apiUrl.replace(/\/api\/?$/, '');
+
 
         console.log('Connecting to socket at:', socketUrl);
-        const socket = io(socketUrl, {
-            transports: ['websocket', 'polling']
-        });
+        const socket = io(socketUrl);
 
         socket.on('connect', () => {
             console.log('Connected to socket server with ID:', socket.id);

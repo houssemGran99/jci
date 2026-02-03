@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import Dashboard from '@/components/Dashboard';
 import { getTeams, getPlayers, getMatches } from '@/lib/api';
 
