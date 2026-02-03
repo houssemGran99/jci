@@ -8,7 +8,7 @@ interface TeamsViewProps {
 export default function TeamsView({ data }: TeamsViewProps) {
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold text-white border-l-4 border-primary pl-4">
                 Équipes Participantes
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

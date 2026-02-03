@@ -33,7 +33,7 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4">
+            <h2 className="text-2xl font-bold text-white border-l-4 border-primary pl-4">
                 Calendrier des Matchs
             </h2>
 

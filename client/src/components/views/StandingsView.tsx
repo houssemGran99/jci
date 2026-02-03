@@ -14,7 +14,7 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
 
     return (
         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent border-l-4 border-primary pl-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white border-l-4 border-primary pl-4 flex items-center justify-between">
                 <span>Classement des Groupes</span>
                 <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground bg-black/20 px-3 py-1 rounded-full border border-white/5">
 
