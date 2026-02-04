@@ -43,7 +43,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
         if (!teamForm.name) return;
         setIsLoading(true);
         try {
-            if (isEditing && selectedTeam) {
+            if (selectedTeam) {
                 const updated = await updateTeam(selectedTeam.id, teamForm);
                 setTeams(teams.map(t => t.id === updated.id ? updated : t));
 
@@ -64,11 +64,16 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                 }
             }
 
-            // Reset Form
-            setTeamForm({ name: '', group: 'A', logo: '🛡️', colors: ['#ffffff', '#000000'] });
-            setFormPlayers([]);
-            setIsEditing(false);
-            setSelectedTeam(null);
+            // Reset Form - but keep current selection logic if editing
+            if (!selectedTeam) {
+                setTeamForm({ name: '', group: 'A', logo: '🛡️', colors: ['#ffffff', '#000000'] });
+                setFormPlayers([]);
+                setIsEditing(false);
+                setSelectedTeam(null);
+            } else {
+                setFormPlayers([]); // Clear added players after save
+            }
+
         } catch (err) {
             alert('Erreur lors de l\'enregistrement de l\'équipe');
             console.error(err);
@@ -88,10 +93,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                     await deleteTeam(id);
                     setTeams(teams.filter(t => t.id !== id));
                     setPlayers(players.filter(p => p.teamId !== id));
-                    // Ideally we should also update the matches list in parent component or context
-                    // For now, let's just clear the selection
                     if (selectedTeam?.id === id) setSelectedTeam(null);
-                    // Refresh page to sync matches (since matches are passed as initialData)
                     window.location.reload();
                 } catch (err) {
                     alert('Erreur lors de la suppression de l\'équipe');
@@ -144,7 +146,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
             <ConfirmationModal
                 isOpen={modalConfig.isOpen}
                 title={modalConfig.title}
@@ -155,8 +157,22 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
             />
             {/* Team List */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-2">Équipes</h3>
-                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/50">Équipes ({teams.length})</h3>
+                    <button
+                        onClick={() => {
+                            setSelectedTeam(null);
+                            setIsEditing(true);
+                            setTeamForm({ name: '', group: 'A', logo: '🛡️', colors: ['#ffffff', '#000000'] });
+                            setFormPlayers([]);
+                        }}
+                        className="text-[9px] uppercase tracking-wider text-primary hover:text-white transition-colors"
+                    >
+                        + Nouvelle Équipe
+                    </button>
+                </div>
+
+                <div className="overflow-hidden">
                     {teams.map(team => (
                         <div
                             key={team.id}
@@ -164,165 +180,162 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                                 setSelectedTeam(team);
                                 setIsEditing(true);
                                 setTeamForm(team);
-                                setFormPlayers([]); // Reset form players when selecting existing team
+                                setFormPlayers([]);
                             }}
-                            className={`p-3 rounded-lg border cursor-pointer flex justify-between items-center transition ${selectedTeam?.id === team.id ? 'bg-primary text-white border-primary' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                            className={`group flex items-center justify-between p-3 border-b border-white/5 cursor-pointer transition-colors ${selectedTeam?.id === team.id ? 'bg-white/5' : 'hover:bg-white/[0.02]'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <span>{team.logo}</span>
-                                <span className="font-bold">{team.name}</span>
-                                <span className="text-xs opacity-70 bg-black/30 px-2 py-1 rounded whitespace-nowrap">Groupe {team.group}</span>
+                                <span className="text-lg opacity-80 group-hover:scale-110 transition-transform">{team.logo}</span>
+                                <div>
+                                    <div className={`text-[13px] font-medium leading-none mb-1 ${selectedTeam?.id === team.id ? 'text-white' : 'text-white/70 group-hover:text-white'}`}>{team.name}</div>
+                                    <div className="text-[9px] uppercase tracking-wider text-white/30">Groupe {team.group} • {players.filter(p => p.teamId === team.id).length} Joueurs</div>
+                                </div>
                             </div>
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteTeam(team.id); }}
-                                className="text-red-400 hover:text-red-300 p-1 disabled:opacity-50"
+                                className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all p-2"
                                 disabled={isLoading}
                             >
-                                {isLoading ? '...' : '🗑️'}
+                                🗑️
                             </button>
                         </div>
                     ))}
                 </div>
-
-                <div className="pt-4 border-t border-white/10">
-                    <button
-                        onClick={() => {
-                            setSelectedTeam(null);
-                            setIsEditing(false);
-                            setTeamForm({ name: '', group: 'A', logo: '🛡️', colors: ['#ffffff', '#000000'] });
-                            setFormPlayers([]);
-                        }}
-                        className="w-full py-2 border border-dashed border-white/30 rounded text-muted hover:text-white hover:border-white"
-                    >
-                        + Ajouter une nouvelle équipe
-                    </button>
-                </div>
             </div>
 
             {/* Editor Area */}
-            <div ref={editSectionRef} className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <h3 className="text-xl font-bold mb-6">{isEditing ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}</h3>
-
-                <div className="space-y-4 mb-8">
-                    <div>
-                        <label className="block text-xs uppercase text-muted mb-1">Nom de l'équipe</label>
-                        <input
-                            type="text"
-                            className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
-                            value={teamForm.name}
-                            onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
-                        />
+            <div ref={editSectionRef} className={`relative transition-opacity duration-300 ${!isEditing ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+                {!isEditing && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <span className="text-white/20 text-xs tracking-widest uppercase">Sélectionnez une équipe pour modifier</span>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Groupe</label>
-                            <select
-                                className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
-                                value={teamForm.group}
-                                onChange={(e) => setTeamForm({ ...teamForm, group: e.target.value })}
-                            >
-                                <option value="A">Groupe A</option>
-                                <option value="B">Groupe B</option>
-                            </select>
-                        </div><br />
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Logo (Choisir Emoji)</label>
-                            <div className="flex gap-4 items-center">
-                                <select
-                                    className="flex-1 bg-black/20 border border-white/10 rounded p-2 text-white text-xl"
-                                    value={teamForm.logo}
-                                    onChange={(e) => setTeamForm({ ...teamForm, logo: e.target.value })}
-                                >
-                                    {['⚽', '🦁', '🦅', '🐺', '🐉', '🦈', '🐍', '🦂', '🐯', '🐻', '🦍', '🐂', '🐎', '🐊', '🐆', '🐅', '🐘', '🦖', '🦇', '🐝', '🕷️', '🦋', '🛡️', '⚡', '🔥', '⚔️', '🏹', '⚓', '👑', '🔱', '💎', '🌟', '🌪️', '☄️', '🚀', '🛸', '☠️', '👻', '👹', '👺'].map(emoji => (
-                                        <option key={emoji} value={emoji}>{emoji}</option>
-                                    ))}
-                                </select>
-                                <div className="text-4xl bg-white/10 p-2 rounded min-w-[60px] text-center">{teamForm.logo}</div>
+                )}
+
+                <div className="border border-white/5 rounded-lg bg-white/[0.01] p-6">
+                    <div className="mb-6 pb-4 border-b border-white/5 flex justify-between items-baseline">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-white/70">
+                            {selectedTeam ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}
+                        </h3>
+                        {isEditing && selectedTeam && (
+                            <span className="text-[10px] text-white/30 font-mono">ID: {selectedTeam.id}</span>
+                        )}
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-[1fr_auto] gap-4">
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Nom de l'équipe</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-transparent border-b border-white/10 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-white/10"
+                                    placeholder="Nom de l'équipe"
+                                    value={teamForm.name}
+                                    onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30 text-center">Logo</label>
+                                <div className="relative">
+                                    <select
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                        value={teamForm.logo}
+                                        onChange={(e) => setTeamForm({ ...teamForm, logo: e.target.value })}
+                                    >
+                                        {['⚽', '🦁', '🦅', '🐺', '🐉', '🦈', '🐍', '🦂', '🐯', '🐻', '🦍', '🐂', '🐎', '🐊', '🐆', '🐅', '🐘', '🦖', '🦇', '🐝', '🕷️', '🦋', '🛡️', '⚡', '🔥', '⚔️', '🏹', '⚓', '👑', '🔱', '💎', '🌟', '🌪️', '☄️', '🚀', '🛸', '☠️', '👻', '👹', '👺'].map(emoji => (
+                                            <option key={emoji} value={emoji}>{emoji}</option>
+                                        ))}
+                                    </select>
+                                    <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded border border-white/10 text-xl">
+                                        {teamForm.logo}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Players Section for New Teams */}
-                    <div className="pt-4 border-t border-white/10">
-                        <label className="block text-xs uppercase text-muted mb-2">Joueurs {isEditing ? '(Ajouter Nouveau)' : ''}</label>
-                        <div className="flex gap-2 mb-2">
-                            <input
-                                type="text"
-                                placeholder="Nom du joueur"
-                                className="flex-1 bg-black/20 border border-white/10 rounded p-2 text-white text-sm"
-                                value={newPlayerName}
-                                onChange={(e) => setNewPlayerName(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        if (isEditing) handleAddPlayer();
-                                        else handleAddPlayerToForm();
-                                    }
-                                }}
-                            />
-                            <button
-                                onClick={isEditing ? handleAddPlayer : handleAddPlayerToForm}
-                                className="bg-secondary px-4 rounded text-white font-bold"
-                            >
-                                +
-                            </button>
+                        <div className="space-y-1">
+                            <label className="block text-[9px] uppercase tracking-widest text-white/30">Groupe</label>
+                            <div className="flex gap-2">
+                                {['A', 'B'].map(g => (
+                                    <button
+                                        key={g}
+                                        onClick={() => setTeamForm({ ...teamForm, group: g })}
+                                        className={`flex-1 py-2 text-[10px] uppercase tracking-wider border rounded transition-all ${teamForm.group === g ? 'bg-primary/20 border-primary text-primary font-bold' : 'border-white/10 text-white/40 hover:bg-white/5'}`}
+                                    >
+                                        Groupe {g}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Staged Players (for new team) */}
-                        {!isEditing && formPlayers.length > 0 && (
-                            <ul className="space-y-2 mb-4">
-                                {formPlayers.map((name, i) => (
-                                    <li key={i} className="flex justify-between items-center bg-white/5 p-2 rounded text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <button className="text-lg text-gray-600 opacity-30 cursor-not-allowed" title="Save team to set captain">★</button>
-                                            <span>{name}</span>
-                                        </div>
-                                        <button onClick={() => handleRemovePlayerFromForm(i)} className="text-red-400 px-2">×</button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        {/* Players Section */}
+                        <div className="pt-4 border-t border-white/5">
+                            <div className="flex justify-between items-end mb-3">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Joueurs Impact</label>
+                            </div>
 
-                        {/* Existing Players (for editing team) */}
-                        {isEditing && selectedTeam && (
-                            <ul className="space-y-2 max-h-[300px] overflow-y-auto">
-                                {players.filter(p => p.teamId === selectedTeam.id).map(player => (
-                                    <li key={player.id} className="flex justify-between items-center bg-black/20 p-2 rounded text-sm">
+                            <div className="flex gap-2 mb-4">
+                                <input
+                                    type="text"
+                                    placeholder="Ajouter un joueur..."
+                                    className="flex-1 bg-transparent border-b border-white/10 py-1 text-xs text-white focus:outline-none focus:border-white/30 placeholder:text-white/10"
+                                    value={newPlayerName}
+                                    onChange={(e) => setNewPlayerName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            if (isEditing) handleAddPlayer();
+                                            else handleAddPlayerToForm();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    onClick={isEditing ? handleAddPlayer : handleAddPlayerToForm}
+                                    className="text-[10px] uppercase font-bold text-primary hover:text-white disabled:opacity-30"
+                                    disabled={!newPlayerName}
+                                >
+                                    Ajouter
+                                </button>
+                            </div>
+
+                            <div className="space-y-1 max-h-[250px] overflow-y-auto custom-scrollbar">
+                                {/* Staged Players */}
+                                {!isEditing && formPlayers.map((name, i) => (
+                                    <div key={i} className="flex justify-between items-center py-2 px-3 bg-white/[0.02] rounded border border-dashed border-white/10">
                                         <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={async () => {
-                                                    const updated = await import('@/lib/api').then(m => m.updatePlayer(player.id, { isCaptain: !player.isCaptain }));
-                                                    setPlayers(players.map(p => p.id === updated.id ? updated : p));
-                                                }}
-                                                className={`text-lg hover:scale-110 transition ${player.isCaptain ? 'text-yellow-400 opacity-100' : 'text-gray-600 opacity-50 hover:opacity-100'}`}
-                                                title="Toggle Captain"
-                                            >
-                                                ★
-                                            </button>
-                                            <span className={player.isCaptain ? 'font-bold text-yellow-100' : ''}>{player.name}</span>
+                                            <span className="text-[11px] text-white/70 italic">{name}</span>
+                                            <span className="text-[9px] text-primary bg-primary/10 px-1 rounded">Nouveau</span>
                                         </div>
-                                        <button onClick={() => handleDeletePlayer(player.id)} className="text-red-400 hover:text-red-300">×</button>
-                                    </li>
+                                        <button onClick={() => handleRemovePlayerFromForm(i)} className="text-white/20 hover:text-red-400">×</button>
+                                    </div>
                                 ))}
-                                {/* Also show staged new players if any were added before saving in edit mode */}
-                                {formPlayers.map((name, i) => (
-                                    <li key={`new-${i}`} className="flex justify-between items-center bg-white/10 p-2 rounded text-sm border border-dashed border-white/20">
-                                        <span className="italic opacity-70">{name} (En attente d'enregistrement)</span>
-                                        <button onClick={() => handleRemovePlayerFromForm(i)} className="text-red-400 px-2">×</button>
-                                    </li>
+
+                                {/* Existing Players */}
+                                {isEditing && selectedTeam && players.filter(p => p.teamId === selectedTeam.id).map(player => (
+                                    <div key={player.id} className="group flex justify-between items-center py-1.5 px-2 hover:bg-white/5 rounded transition-colors">
+                                        <div className="flex items-center gap-2 cursor-pointer" onClick={async () => {
+                                            const updated = await import('@/lib/api').then(m => m.updatePlayer(player.id, { isCaptain: !player.isCaptain }));
+                                            setPlayers(players.map(p => p.id === updated.id ? updated : p));
+                                        }}>
+                                            <span className={`text-[10px] ${player.isCaptain ? 'text-yellow-400' : 'text-white/10 group-hover:text-white/30'}`}>★</span>
+                                            <span className={`text-[11px] ${player.isCaptain ? 'text-white font-medium' : 'text-white/60'}`}>{player.name}</span>
+                                        </div>
+                                        <button onClick={() => handleDeletePlayer(player.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 text-xs">×</button>
+                                    </div>
                                 ))}
-                            </ul>
-                        )}
+                            </div>
+                        </div>
+
+
+                        <div className="pt-4 mt-4 border-t border-white/5">
+                            <button
+                                type="submit"
+                                onClick={handleSaveTeam}
+                                className="w-full bg-white text-black hover:bg-white/90 font-bold text-[10px] uppercase tracking-widest py-3 rounded transition-all disabled:opacity-50"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Chargement...' : (isEditing ? 'Enregistrer les modifications' : 'Créer l\'équipe')}
+                            </button>
+                        </div>
                     </div>
-
-
-                    <button
-                        type="submit"
-                        onClick={handleSaveTeam}
-                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-2 rounded transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Chargement...' : (isEditing ? 'Enregistrer' : 'Créer l\'équipe')}
-                    </button>
                 </div>
             </div>
         </div>

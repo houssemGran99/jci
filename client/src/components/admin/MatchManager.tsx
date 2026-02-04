@@ -25,7 +25,6 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     }, [selectedMatch]);
 
     // Match Form State
-    // Match Form State
     const defaultForm: Partial<Match> = {
         group: 'A',
         matchDay: 1,
@@ -37,6 +36,8 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
         cards: []
     };
     const [matchForm, setMatchForm] = useState<Partial<Match>>(defaultForm);
+    const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
+
     const [modalConfig, setModalConfig] = useState<{
         isOpen: boolean;
         title: string;
@@ -52,10 +53,9 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     const handleSaveMatch = async () => {
         setIsLoading(true);
         try {
-            if (isEditing && selectedMatch) {
+            if (selectedMatch) {
                 const updated = await updateMatch(selectedMatch.id, matchForm);
                 setMatches(matches.map(m => m.id === updated.id ? updated : m));
-                // Optional: Show success feedback
             } else {
                 const created = await createMatch(matchForm);
                 setMatches([...matches, created]);
@@ -95,7 +95,6 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
         });
     };
 
-    // Helper to get players for the selected match's teams
     const getMatchPlayers = () => {
         if (!matchForm.teamHomeId || !matchForm.teamAwayId) return [];
         return initialData.players.filter(p => p.teamId == matchForm.teamHomeId || p.teamId == matchForm.teamAwayId);
@@ -145,8 +144,6 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
         setMatchForm(updates);
         setScorerSelection(null);
-        setMatchForm(updates);
-        setScorerSelection(null);
     };
 
     const handleDownloadImage = async () => {
@@ -182,10 +179,6 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
         }
     };
 
-
-
-    const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
-
     // Filter matches based on selected day
     const filteredMatches = matches.filter(m => {
         if (selectedDay === 'all') return true;
@@ -198,7 +191,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
     });
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 font-sans">
             <ConfirmationModal
                 isOpen={modalConfig.isOpen}
                 title={modalConfig.title}
@@ -210,16 +203,16 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
 
             {/* Scorer Selection Modal */}
             {scorerSelection && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="bg-card border border-white/10 rounded-xl p-6 w-full max-w-sm shadow-2xl">
-                        <h3 className="text-xl font-bold mb-4 text-center">Qui a marqué ?</h3>
-                        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="bg-[#0a0a0a] border border-white/10 rounded-lg p-6 w-full max-w-sm shadow-2xl">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-center mb-6 text-white/50">Qui a marqué ?</h3>
+                        <div className="space-y-1 max-h-[50vh] overflow-y-auto">
                             <button
                                 onClick={() => handleScorerSelected(null)}
-                                className="w-full text-left p-3 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/20 transition flex justify-between items-center"
+                                className="w-full text-left p-2 rounded hover:bg-white/5 transition flex justify-between items-center group"
                             >
-                                <span className="italic text-muted">Inconnu / Autre</span>
-                                <span>⚽</span>
+                                <span className="text-[11px] uppercase tracking-wide text-white/40 group-hover:text-white">Inconnu / Autre</span>
+                                <span className="opacity-0 group-hover:opacity-100">⚽</span>
                             </button>
                             {initialData.players
                                 .filter(p => p.teamId === scorerSelection.teamId)
@@ -227,16 +220,17 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                     <button
                                         key={player.id}
                                         onClick={() => handleScorerSelected(player.id)}
-                                        className="w-full text-left p-3 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/20 transition font-bold"
+                                        className="w-full text-left p-2 rounded hover:bg-white/5 transition flex justify-between items-center group"
                                     >
-                                        {player.name}
+                                        <span className="text-[11px] font-bold text-white/80 group-hover:text-white">{player.name}</span>
+                                        <span className="opacity-0 group-hover:opacity-100">⚽</span>
                                     </button>
                                 ))
                             }
                         </div>
                         <button
                             onClick={() => setScorerSelection(null)}
-                            className="w-full mt-4 py-2 text-sm text-red-400 hover:text-red-300"
+                            className="w-full mt-6 py-2 text-[10px] uppercase tracking-widest text-red-400 hover:text-red-300 border-t border-white/5"
                         >
                             Annuler
                         </button>
@@ -245,11 +239,11 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
             )}
 
             {/* Match List */}
-            <div>
-                <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
-                    <h3 className="text-xl font-bold">Matchs</h3>
+            <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/50">Matchs</h3>
                     <select
-                        className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs"
+                        className="bg-transparent border-0 text-[10px] uppercase tracking-widest text-primary focus:ring-0 cursor-pointer"
                         value={selectedDay}
                         onChange={(e) => {
                             const val = e.target.value;
@@ -257,14 +251,15 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             else setSelectedDay(parseInt(val));
                         }}
                     >
-                        <option value="all">Tous les jours</option>
-                        <option value="today">Aujourd'hui</option>
+                        <option value="all" className="bg-black text-white">Tous les jours</option>
+                        <option value="today" className="bg-black text-white">Aujourd'hui</option>
                         {[1, 2, 3, 4, 5, 6, 7].map(d => (
-                            <option key={d} value={d}>{d >= 6 ? (d === 6 ? 'Demi-Finale' : 'Finale') : `Journée ${d}`}</option>
+                            <option key={d} value={d} className="bg-black text-white">{d >= 6 ? (d === 6 ? 'Demi-Finale' : 'Finale') : `Journée ${d}`}</option>
                         ))}
                     </select>
                 </div>
-                <div className="space-y-3 max-h-[700px] overflow-y-auto">
+
+                <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
                     {filteredMatches.sort((a, b) => {
                         if (a.status === 'inprogress' && b.status !== 'inprogress') return -1;
                         if (b.status === 'inprogress' && a.status !== 'inprogress') return 1;
@@ -272,13 +267,16 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                     }).map(match => {
                         const home = initialData.teams.find(t => t.id === match.teamHomeId);
                         const away = initialData.teams.find(t => t.id === match.teamAwayId);
+
+                        // Check if active match
+                        const isActive = selectedMatch?.id === match.id;
+
                         return (
                             <div
                                 key={match.id}
                                 onClick={() => {
                                     setSelectedMatch(match);
                                     setIsEditing(true);
-                                    // ensure date format is correct for input, and set scores to 0 if null
                                     setMatchForm({
                                         ...match,
                                         date: new Date(match.date).toISOString().slice(0, 16),
@@ -286,324 +284,295 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                                         scoreAway: match.scoreAway ?? 0
                                     });
                                 }}
-                                className={`p-4 rounded-lg border cursor-pointer transition ${selectedMatch?.id === match.id ? 'bg-primary text-white border-primary' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                className={`group relative p-3 border-b border-white/5 cursor-pointer transition-all hover:bg-white/[0.02] ${isActive ? 'bg-white/5' : ''}`}
                             >
-                                <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-                                    <div className="flex items-center gap-2 w-full md:w-[40%] justify-center md:justify-start">
-                                        <span className="text-2xl">{home?.logo}</span>
-                                        <span className="font-bold truncate text-center md:text-left">{home?.name}</span>
-                                    </div>
+                                {isActive && <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary"></div>}
 
-                                    <div className={`bg-black/40 px-4 py-2 rounded-lg relative min-w-[80px] text-center ${match.status === 'inprogress' ? 'border border-red-500/30 text-red-100' : ''}`}>
-                                        {match.status === 'inprogress' && (
-                                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                            </span>
-                                        )}
-                                        <span className="text-xl font-bold tracking-widest">{match.status === 'completed' || match.status === 'inprogress' ? `${match.scoreHome}-${match.scoreAway}` : 'VS'}</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 w-full md:w-[40%] justify-center md:justify-end flex-row-reverse md:flex-row">
-                                        <span className="font-bold truncate text-center md:text-right">{away?.name}</span>
-                                        <span className="text-2xl">{away?.logo}</span>
-                                    </div>
+                                <div className="flex justify-between items-center mb-2 opacity-50 text-[9px] uppercase tracking-wider">
+                                    <span>J{match.matchDay} • {match.group}</span>
+                                    {match.status === 'inprogress' && <span className="text-red-500 font-bold animate-pulse">LIVE</span>}
+                                    {match.status === 'completed' && <span>Terminé</span>}
+                                    {match.status === 'scheduled' && <span>{new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
                                 </div>
 
-                                <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/5 text-[10px] uppercase tracking-wider opacity-60">
-                                    <span>J{match.matchDay} • {new Date(match.date).toLocaleDateString()}</span>
-                                    {match.status === 'inprogress' ? (
-                                        <span className="flex items-center gap-1 text-red-400 font-bold animate-pulse">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                            EN DIRECT
+                                <div className="flex items-center justify-between">
+                                    {/* Home */}
+                                    <div className="flex items-center gap-2 flex-1">
+                                        <span className="text-sm">{home?.logo}</span>
+                                        <span className={`text-[11px] font-medium leading-tight ${isActive ? 'text-white' : 'text-white/70'}`}>{home?.name}</span>
+                                    </div>
+
+                                    {/* Score */}
+                                    <div className="px-3 min-w-[50px] text-center">
+                                        <span className={`text-lg font-mono tracking-tighter ${isActive ? 'text-white font-bold scale-110' : 'text-white/40'}`}>
+                                            {match.status === 'scheduled' ? 'vs' : `${match.scoreHome}-${match.scoreAway}`}
                                         </span>
-                                    ) : (
-                                        <span>{match.status === 'scheduled' ? 'Planifié' : 'Terminé'}</span>
-                                    )}
+                                    </div>
+
+                                    {/* Away */}
+                                    <div className="flex items-center gap-2 flex-1 justify-end">
+                                        <span className={`text-[11px] font-medium leading-tight text-right ${isActive ? 'text-white' : 'text-white/70'}`}>{away?.name}</span>
+                                        <span className="text-sm">{away?.logo}</span>
+                                    </div>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
-                <div className="pt-4 mt-4 border-t border-white/10">
+
+                <div className="pt-2 mt-2">
                     <button
                         onClick={() => {
                             setSelectedMatch(null);
-                            setIsEditing(false);
+                            setIsEditing(true);
                             setMatchForm(defaultForm);
                             editSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="w-full py-2 border border-dashed border-white/30 rounded text-muted hover:text-white hover:border-white"
+                        className="w-full py-2 text-[10px] uppercase tracking-widest text-white/30 hover:text-white border border-dashed border-white/10 hover:border-white/30 rounded transition-colors"
                     >
-                        + Planifier un nouveau match
+                        + Planifier Match
                     </button>
                 </div>
             </div>
 
-            {/* Editor */}
-            <div ref={editSectionRef} className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold">{isEditing ? `Modifier le Match #${selectedMatch?.id}` : 'Nouveau Match'}</h3>
-                    {isEditing && (
-                        <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-red-400 text-sm hover:underline disabled:opacity-50" disabled={isLoading}>
-                            {isLoading ? 'Suppression...' : 'Supprimer le Match'}
-                        </button>
-                    )}
-                </div>
+            {/* Editor Area */}
+            <div ref={editSectionRef} className={`relative transition-opacity duration-300 ${!isEditing ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+                {!isEditing && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <span className="text-white/20 text-xs tracking-widest uppercase">Sélectionnez un match</span>
+                    </div>
+                )}
 
-                <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Statut</label>
-                            <select
-                                className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
-                                value={matchForm.status}
-                                onChange={(e) => setMatchForm({ ...matchForm, status: e.target.value as any })}
-                            >
-                                <option value="scheduled">Planifié</option>
-                                <option value="inprogress">En Cours</option>
-                                <option value="completed">Terminé</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Date</label>
-                            <input
-                                type="datetime-local"
-                                className="w-full bg-black/20 border border-white/10 rounded p-2 text-white"
-                                value={matchForm.date}
-                                onChange={(e) => setMatchForm({ ...matchForm, date: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Journée</label>
-                            <select className="w-full bg-black/20 border border-white/10 rounded p-2 text-white" value={matchForm.matchDay} onChange={(e) => setMatchForm({ ...matchForm, matchDay: parseInt(e.target.value) })}>
-                                {[1, 2, 3, 4, 5].map(d => <option key={d} value={d}>J{d}</option>)}
-                                <option value={6}>Demi-Finale</option>
-                                <option value={7}>Finale</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs uppercase text-muted mb-1">Groupe / Phase</label>
-                            <select className="w-full bg-black/20 border border-white/10 rounded p-2 text-white" value={matchForm.group} onChange={(e) => setMatchForm({ ...matchForm, group: e.target.value })}>
-                                <option value="A">Groupe A</option>
-                                <option value="B">Groupe B</option>
-                                <option value="Semi Final">Demi-Finale</option>
-                                <option value="Final">Finale</option>
-                            </select>
-                        </div>
+                <div className="bg-white/[0.01] border border-white/5 rounded-lg p-6">
+                    <div className="flex justify-between items-baseline mb-6 border-b border-white/5 pb-4">
+                        <h3 className="text-xs font-bold uppercase tracking-widest text-white/70">
+                            {selectedMatch ? `Match #${selectedMatch?.id}` : 'Nouveau Match'}
+                        </h3>
+                        {selectedMatch && (
+                            <button onClick={() => handleDeleteMatch(selectedMatch!.id)} className="text-[9px] uppercase tracking-wider text-red-500/50 hover:text-red-500 transition-colors" disabled={isLoading}>
+                                Supprimer
+                            </button>
+                        )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-black/20 rounded-lg">
-                        <div className="space-y-2">
-                            <label className="block text-xs uppercase text-muted">Équipe Domicile</label>
-                            <select
-                                className="w-full bg-card border border-white/10 rounded p-2 text-white"
-                                value={matchForm.teamHomeId || ''}
-                                onChange={(e) => setMatchForm({ ...matchForm, teamHomeId: parseInt(e.target.value) })}
-                            >
-                                <option value="">Sélectionner une équipe</option>
-                                {initialData.teams
-                                    .filter(t => t.id !== matchForm.teamAwayId)
-                                    .map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                            </select>
-                            <div className="flex items-center justify-center gap-3 bg-card border border-white/10 rounded p-2">
-                                <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
-                                    onClick={() => setMatchForm({ ...matchForm, scoreHome: Math.max(0, (matchForm.scoreHome ?? 0) - 1) })}
-                                    disabled={(matchForm.scoreHome ?? 0) <= 0 || matchForm.status === 'completed'}
+                    <div className="space-y-6">
+                        {/* Meta Data Grid */}
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Statut</label>
+                                <select
+                                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white focus:outline-none focus:border-primary"
+                                    value={matchForm.status}
+                                    onChange={(e) => setMatchForm({ ...matchForm, status: e.target.value as any })}
                                 >
-                                    -
-                                </button>
-                                <span className="text-xl font-bold w-8 text-center">{matchForm.scoreHome ?? '-'}</span>
-                                <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold disabled:opacity-50"
-                                    onClick={() => matchForm.teamHomeId && handleGoalClick(matchForm.teamHomeId, 'home')}
-                                    disabled={matchForm.status === 'completed'}
+                                    <option value="scheduled" className="bg-black">Planifié</option>
+                                    <option value="inprogress" className="bg-black">En Cours</option>
+                                    <option value="completed" className="bg-black">Terminé</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Date</label>
+                                <input
+                                    type="datetime-local"
+                                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white focus:outline-none focus:border-primary"
+                                    value={matchForm.date}
+                                    onChange={(e) => setMatchForm({ ...matchForm, date: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Journée</label>
+                                <select
+                                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white focus:outline-none focus:border-primary"
+                                    value={matchForm.matchDay}
+                                    onChange={(e) => setMatchForm({ ...matchForm, matchDay: parseInt(e.target.value) })}
                                 >
-                                    +
-                                </button>
+                                    {[1, 2, 3, 4, 5].map(d => <option key={d} value={d} className="bg-black">Journée {d}</option>)}
+                                    <option value={6} className="bg-black">Demi-Finale</option>
+                                    <option value={7} className="bg-black">Finale</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-[9px] uppercase tracking-widest text-white/30">Groupe</label>
+                                <select
+                                    className="w-full bg-transparent border-b border-white/10 py-1 text-xs text-white focus:outline-none focus:border-primary"
+                                    value={matchForm.group}
+                                    onChange={(e) => setMatchForm({ ...matchForm, group: e.target.value })}
+                                >
+                                    <option value="A" className="bg-black">Groupe A</option>
+                                    <option value="B" className="bg-black">Groupe B</option>
+                                    <option value="Semi Final" className="bg-black">Demi-Finale</option>
+                                    <option value="Final" className="bg-black">Finale</option>
+                                </select>
                             </div>
                         </div>
-                        <div className="space-y-2 text-right">
-                            <label className="block text-xs uppercase text-muted">Équipe Extérieur</label>
-                            <select
-                                className="w-full bg-card border border-white/10 rounded p-2 text-white"
-                                value={matchForm.teamAwayId || ''}
-                                onChange={(e) => setMatchForm({ ...matchForm, teamAwayId: parseInt(e.target.value) })}
-                            >
-                                <option value="">Sélectionner une équipe</option>
-                                {initialData.teams
-                                    .filter(t => t.id !== matchForm.teamHomeId)
-                                    .map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                            </select>
-                            <div className="flex items-center justify-center gap-3 bg-card border border-white/10 rounded p-2">
-                                <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition disabled:opacity-50 text-xl font-bold"
-                                    onClick={() => setMatchForm({ ...matchForm, scoreAway: Math.max(0, (matchForm.scoreAway ?? 0) - 1) })}
-                                    disabled={(matchForm.scoreAway ?? 0) <= 0 || matchForm.status === 'completed'}
-                                >
-                                    -
-                                </button>
-                                <span className="text-xl font-bold w-8 text-center">{matchForm.scoreAway ?? '-'}</span>
-                                <button
-                                    className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition text-xl font-bold disabled:opacity-50"
-                                    onClick={() => matchForm.teamAwayId && handleGoalClick(matchForm.teamAwayId, 'away')}
-                                    disabled={matchForm.status === 'completed'}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Events Editor */}
-                    {(matchForm.teamHomeId && matchForm.teamAwayId) && (
-                        <div className="space-y-4">
-                            {/* Scorers */}
-                            {/* Scorers */}
-                            <div className="border border-white/10 rounded p-4">
-
+                        {/* Teams & Score */}
+                        <div className="bg-white/[0.02] p-4 rounded border border-white/5">
+                            <div className="grid grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                                {/* Home Team Control */}
                                 <div className="space-y-2">
-                                    {(() => {
-                                        const scorerCounts: Record<number, number> = {};
-                                        matchForm.scorers?.forEach(s => scorerCounts[s.playerId] = (scorerCounts[s.playerId] || 0) + 1);
+                                    <label className="block text-[9px] uppercase tracking-widest text-white/30 text-center">Domicile</label>
+                                    <select
+                                        className="w-full bg-transparent text-center border-b border-white/10 py-1 text-xs text-white font-bold focus:outline-none"
+                                        value={matchForm.teamHomeId || ''}
+                                        onChange={(e) => setMatchForm({ ...matchForm, teamHomeId: parseInt(e.target.value) })}
+                                    >
+                                        <option value="" className="bg-black">---</option>
+                                        {initialData.teams
+                                            .filter(t => t.id !== matchForm.teamAwayId)
+                                            .map(t => <option key={t.id} value={t.id} className="bg-black">{t.name}</option>)}
+                                    </select>
+                                    <div className="flex justify-center items-center gap-2">
+                                        <button className="w-6 h-6 rounded flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/50 hover:text-white" onClick={() => setMatchForm({ ...matchForm, scoreHome: Math.max(0, (matchForm.scoreHome ?? 0) - 1) })}>-</button>
+                                        <span className="w-6 text-center text-lg font-mono font-bold">{matchForm.scoreHome ?? 0}</span>
+                                        <button className="w-6 h-6 rounded flex items-center justify-center bg-primary/20 hover:bg-primary text-primary hover:text-white transition-colors" onClick={() => matchForm.teamHomeId && handleGoalClick(matchForm.teamHomeId, 'home')}>+</button>
+                                    </div>
+                                </div>
 
-                                        return Object.entries(scorerCounts).map(([idStr, count]) => {
-                                            const pid = parseInt(idStr);
-                                            const p = initialData.players.find(pl => pl.id === pid);
-                                            const team = initialData.teams.find(t => t.id === p?.teamId);
+                                <div className="text-white/10 font-thin text-2xl px-2">vs</div>
+
+                                {/* Away Team Control */}
+                                <div className="space-y-2">
+                                    <label className="block text-[9px] uppercase tracking-widest text-white/30 text-center">Extérieur</label>
+                                    <select
+                                        className="w-full bg-transparent text-center border-b border-white/10 py-1 text-xs text-white font-bold focus:outline-none"
+                                        value={matchForm.teamAwayId || ''}
+                                        onChange={(e) => setMatchForm({ ...matchForm, teamAwayId: parseInt(e.target.value) })}
+                                    >
+                                        <option value="" className="bg-black">---</option>
+                                        {initialData.teams
+                                            .filter(t => t.id !== matchForm.teamHomeId)
+                                            .map(t => <option key={t.id} value={t.id} className="bg-black">{t.name}</option>)}
+                                    </select>
+                                    <div className="flex justify-center items-center gap-2">
+                                        <button className="w-6 h-6 rounded flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/50 hover:text-white" onClick={() => setMatchForm({ ...matchForm, scoreAway: Math.max(0, (matchForm.scoreAway ?? 0) - 1) })}>-</button>
+                                        <span className="w-6 text-center text-lg font-mono font-bold">{matchForm.scoreAway ?? 0}</span>
+                                        <button className="w-6 h-6 rounded flex items-center justify-center bg-primary/20 hover:bg-primary text-primary hover:text-white transition-colors" onClick={() => matchForm.teamAwayId && handleGoalClick(matchForm.teamAwayId, 'away')}>+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Events (Scorers & Cards) */}
+                        {(matchForm.teamHomeId && matchForm.teamAwayId) && (
+                            <div className="space-y-4 pt-4 border-t border-white/5">
+                                {/* Scorers List (Auto populated by + button mostly) */}
+                                <div className="space-y-2">
+                                    <h4 className="text-[9px] uppercase tracking-widest text-white/30">Buteurs</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {matchForm.scorers?.length === 0 && <span className="text-[10px] italic text-white/20">Aucun buteur</span>}
+                                        {matchForm.scorers?.map((s, idx) => {
+                                            const p = initialData.players.find(pl => pl.id === s.playerId);
                                             return (
-                                                <div key={pid} className="flex gap-2 items-center text-sm bg-white/5 p-1 rounded">
-                                                    <span className="flex-1 font-bold flex items-center gap-2">
-                                                        <span>{p?.name}</span>
-                                                        <span className="text-xs opacity-50 font-normal">({team?.name})</span>
-                                                        <span className="ml-auto flex items-center gap-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">
-                                                            <span>⚽</span>
-                                                            {count > 1 && <span className="ml-1 text-white font-bold">x{count}</span>}
-                                                        </span>
-                                                    </span>
-                                                    <button
-                                                        onClick={() => {
-                                                            const idx = matchForm.scorers?.findIndex(s => s.playerId === pid);
-                                                            if (idx !== undefined && idx !== -1) removeScorer(idx);
-                                                        }}
-                                                        className="text-red-400 px-2 hover:bg-red-500/10 rounded disabled:opacity-50"
-                                                        disabled={matchForm.status === 'completed'}
-                                                    >
-                                                        ×
-                                                    </button>
+                                                <div key={idx} className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded border border-white/5 text-[10px]">
+                                                    <span className="font-bold text-white/90">{p?.name}</span>
+                                                    <span className="text-[8px] opacity-50">⚽</span>
+                                                    <button onClick={() => removeScorer(idx)} className="ml-1 text-white/20 hover:text-red-400">×</button>
                                                 </div>
                                             );
-                                        });
-                                    })()}
-                                </div>
-                            </div>
-
-                            {/* Cards */}
-                            <div className="border border-white/10 rounded p-4">
-                                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
-                                    <label className="text-xs uppercase font-bold text-yellow-400">Cartons</label>
-                                    <select
-                                        className="text-xs bg-black/30 p-2 rounded w-full md:w-auto disabled:opacity-50"
-                                        onChange={(e) => { if (e.target.value) addCard(parseInt(e.target.value)); e.target.value = ''; }}
-                                        disabled={matchForm.status === 'completed'}
-                                    >
-                                        <option value="">+ Ajouter Carton</option>
-                                        {getMatchPlayers().map(p => {
-                                            const team = initialData.teams.find(t => t.id === p.teamId);
-                                            return <option key={p.id} value={p.id}>{p.name} ({team?.name})</option>;
                                         })}
-                                    </select>
+                                    </div>
                                 </div>
+
+                                {/* Cards */}
                                 <div className="space-y-2">
-                                    {matchForm.cards?.map((card, i) => {
-                                        const p = initialData.players.find(pl => pl.id === card.playerId);
-                                        const team = initialData.teams.find(t => t.id === p?.teamId);
-                                        return (
-                                            <div key={i} className="flex gap-2 items-center text-sm bg-white/5 p-1 rounded">
-                                                <span className="flex-1">{p?.name} <span className="text-xs opacity-50 ml-1">({team?.name})</span></span>
-                                                <select
-                                                    className={`w-20 p-1 rounded ${card.type === 'yellow' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}
-                                                    value={card.type}
-                                                    onChange={(e) => {
-                                                        const newCards = [...(matchForm.cards || [])];
-                                                        newCards[i].type = e.target.value as any;
-                                                        setMatchForm({ ...matchForm, cards: newCards });
-                                                    }}
-                                                >
-                                                    <option value="yellow">Jaune</option>
-                                                    <option value="red">Rouge</option>
-                                                </select>
-                                                <button onClick={() => removeCard(i)} className="text-red-400 px-2 disabled:opacity-50" disabled={matchForm.status === 'completed'}>×</button>
-                                            </div>
-                                        );
-                                    })}
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-[9px] uppercase tracking-widest text-white/30">Cartons</h4>
+                                        <select
+                                            className="bg-transparent border border-white/10 text-[9px] rounded px-1 text-white/50 hover:text-white"
+                                            onChange={(e) => { if (e.target.value) addCard(parseInt(e.target.value)); e.target.value = ''; }}
+                                        >
+                                            <option value="" className="bg-black">+ Ajouter</option>
+                                            {getMatchPlayers().map(p => <option key={p.id} value={p.id} className="bg-black">{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {matchForm.cards?.length === 0 && <span className="text-[10px] italic text-white/20">Aucun carton</span>}
+                                        {matchForm.cards?.map((card, i) => {
+                                            const p = initialData.players.find(pl => pl.id === card.playerId);
+                                            return (
+                                                <div key={i} className={`flex items-center gap-1 px-2 py-1 rounded border border-white/5 text-[10px] ${card.type === 'yellow' ? 'bg-yellow-500/10 text-yellow-200' : 'bg-red-500/10 text-red-300'}`}>
+                                                    <span className="font-bold">{p?.name}</span>
+                                                    <select
+                                                        className="bg-transparent border-none text-[8px] uppercase font-bold focus:ring-0 cursor-pointer"
+                                                        value={card.type}
+                                                        onChange={(e) => {
+                                                            const newCards = [...(matchForm.cards || [])];
+                                                            newCards[i].type = e.target.value as any;
+                                                            setMatchForm({ ...matchForm, cards: newCards });
+                                                        }}
+                                                    >
+                                                        <option value="yellow" className="bg-black">J</option>
+                                                        <option value="red" className="bg-black">R</option>
+                                                    </select>
+                                                    <button onClick={() => removeCard(i)} className="ml-1 opacity-50 hover:opacity-100">×</button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
+                        )}
+
+                        <div className="pt-4 border-t border-white/5">
+                            <button
+                                onClick={handleSaveMatch}
+                                className="w-full bg-white text-black hover:bg-white/90 font-bold text-[10px] uppercase tracking-widest py-3 rounded transition-all disabled:opacity-50"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Chargement...' : (isEditing ? 'Enregistrer les modifications' : 'Planifier le match')}
+                            </button>
+
+                            {isEditing && matchForm.status === 'completed' && matchForm.teamHomeId && matchForm.teamAwayId && (
+                                <button
+                                    onClick={() => setImagePreviewOpen(true)}
+                                    className="w-full mt-3 bg-white/5 hover:bg-white/10 text-white font-medium text-[10px] uppercase tracking-widest py-2 rounded border border-white/10 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <span>📸</span> Générer Image Résultats
+                                </button>
+                            )}
                         </div>
-                    )}
-
-                    <button
-                        onClick={handleSaveMatch}
-                        className="w-full bg-primary hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 transition mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Chargement...' : (isEditing ? 'Mettre à jour les résultats' : 'Planifier le match')}
-                    </button>
-
-                    {/* Image Generation Button */}
-                    {isEditing && matchForm.status === 'completed' && matchForm.teamHomeId && matchForm.teamAwayId && (
-                        <button
-                            onClick={() => setImagePreviewOpen(true)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition mt-4 flex items-center justify-center gap-2"
-                        >
-                            <span>📸</span> Générer Image Résultats
-                        </button>
-                    )}
-
+                    </div>
                 </div>
-            </div >
+            </div>
 
             {/* Image Preview Modal */}
             {imagePreviewOpen && matchForm.teamHomeId && matchForm.teamAwayId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
-                    <div className="relative max-h-[90vh] overflow-y-auto bg-card p-4 rounded-xl border border-white/10">
+                    <div className="relative max-h-[90vh] overflow-y-auto w-full max-w-lg bg-[#0a0a0a] rounded-xl border border-white/10 p-4">
                         <button
-                            className="absolute top-2 right-2 text-white bg-black/50 rounded-full w-8 h-8 z-50"
+                            className="absolute top-2 right-2 text-white/50 hover:text-white z-50 p-2"
                             onClick={() => setImagePreviewOpen(false)}
                         >
                             ✕
                         </button>
 
-                        <div className="transform scale-50 md:scale-75 origin-top-left md:origin-center bg-black">
-                            <MatchResultTemplate
-                                ref={imageRef}
-                                match={matchForm as Match}
-                                homeTeam={initialData.teams.find(t => t.id === matchForm.teamHomeId)!}
-                                awayTeam={initialData.teams.find(t => t.id === matchForm.teamAwayId)!}
-                                players={initialData.players}
-                            />
+                        <div className="flex justify-center my-4 overflow-hidden rounded-lg border border-white/5">
+                            <div className="transform scale-[0.6] md:scale-75 origin-top md:origin-center">
+                                {/* Keep the scale to fit, or handle nicely */}
+                                <MatchResultTemplate
+                                    ref={imageRef}
+                                    match={matchForm as Match}
+                                    homeTeam={initialData.teams.find(t => t.id === matchForm.teamHomeId)!}
+                                    awayTeam={initialData.teams.find(t => t.id === matchForm.teamAwayId)!}
+                                    players={initialData.players}
+                                />
+                            </div>
                         </div>
 
-                        <div className="flex justify-center mt-4 gap-4">
-                            <button
-                                onClick={handleDownloadImage}
-                                className="bg-primary hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg transition"
-                            >
+                        <div className="flex gap-2 justify-center mt-2">
+                            <button onClick={handleDownloadImage} className="flex-1 bg-white text-black font-bold text-[10px] uppercase tracking-widest py-3 rounded">
                                 Télécharger
                             </button>
                             {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
-                                <button
-                                    onClick={handleShareImage}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center gap-2"
-                                >
-                                    <span>📤</span> Partager
+                                <button onClick={handleShareImage} className="flex-1 bg-white/10 text-white font-bold text-[10px] uppercase tracking-widest py-3 rounded hover:bg-white/20">
+                                    Partager
                                 </button>
                             )}
                         </div>
                     </div>
                 </div>
             )}
-        </div >
+        </div>
     );
 }

@@ -5,9 +5,11 @@
   --foreground: #ffffff;
 }
 
+
 @theme {
-  --font-rubik: var(--font-rubik);
-  --font-opensans: var(--font-open-sans);
+  --font-oswald: var(--font-oswald);
+  --font-inter: var(--font-inter);
+
 
   /* New Green/Orange Theme */
   --color-dark: #005031;
@@ -24,7 +26,7 @@
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: var(--font-rubik);
+  font-family: var(--font-inter);
   background-image:
     linear-gradient(rgba(0, 80, 49, 0.5), rgba(0, 80, 49, 0.7)),
     url('/background-img.jpg');
