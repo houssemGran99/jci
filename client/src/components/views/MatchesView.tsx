@@ -36,15 +36,15 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
 
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {['all', 'today', 1, 2, 3, 4, 5, 6, 7].map(day => (
+                {['all', 'today'].map(day => (
                     <button
                         key={day}
                         onClick={() => setSelectedDay(day as number | 'all' | 'today')}
-                        className={`px-3 py-1.5 rounded-lg font-bold uppercase text-xs border transition-all whitespace-nowrap ${selectedDay === day
-                            ? 'bg-primary text-white border-primary shadow-[0_0_15px_rgba(0,151,218,0.4)]'
-                            : 'bg-card text-muted border-white/10 hover:bg-white/5 hover:text-white'}`}
+                        className={`px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest border transition-all whitespace-nowrap ${selectedDay === day
+                            ? 'bg-[#0C9962] text-white border-[#0C9962] shadow-lg'
+                            : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'}`}
                     >
-                        {day === 'all' ? 'TOUS' : day === 'today' ? "AUJOURD'HUI" : day === 6 ? 'SF' : day === 7 ? 'FINAL' : `J${day}`}
+                        {day === 'all' ? 'TOUS' : "AUJOURD'HUI"}
                     </button>
                 ))}
             </div>

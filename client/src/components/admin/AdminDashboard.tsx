@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import { AppData } from '@/lib/types';
 import TeamManager from './TeamManager';
 import MatchManager from './MatchManager';
+import NewsManager from './NewsManager';
 import { logout } from '@/lib/api';
 
 export default function AdminDashboard({ data }: { data: AppData }) {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'teams' | 'matches'>('teams');
+    const [activeTab, setActiveTab] = useState<'teams' | 'matches' | 'news'>('teams');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
@@ -27,37 +28,53 @@ export default function AdminDashboard({ data }: { data: AppData }) {
     }
 
     return (
-        <div className="min-h-screen bg-dark text-white p-6">
-            <header className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                    <div className="text-2xl font-bold text-white flex items-center gap-3">
-                        <img src="/jci-logo.png" alt="Logo" className="h-20 w-auto" />
-                        Beni Hassen Tkawer - Admin
-                    </div>
+        <div className="min-h-screen bg-dark text-white font-sans selection:bg-white/20">
+            {/* Header */}
+            <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur border-b border-white/5 px-6 py-4 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                    <img src="/jci-logo.png" alt="Logo" className="h-6 w-auto opacity-80" />
+                    <h1 className="text-xs font-bold uppercase tracking-widest text-white/90">Beni Hassen Tkawer <span className="text-white/30 font-normal ml-2">Admin</span></h1>
                 </div>
-                <div className="flex items-center gap-4 w-full md:w-auto justify-center">
-                    <button onClick={logout} className="text-xs md:text-sm bg-white/10 hover:bg-white/20 px-3 py-2 rounded text-white transition">Déconnexion</button>
-                </div>
+                <button
+                    onClick={logout}
+                    className="text-[10px] uppercase tracking-wider font-bold text-white/40 hover:text-white transition-colors"
+                >
+                    Déconnexion
+                </button>
             </header>
 
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <button
-                    onClick={() => setActiveTab('teams')}
-                    className={`px-6 py-3 rounded-lg font-bold transition w-full md:w-auto ${activeTab === 'teams' ? 'bg-primary text-white shadow-lg shadow-emerald-900/40' : 'bg-card text-muted hover:bg-white/5 border border-white/5'}`}
-                >
-                    Équipes & Joueurs
-                </button>
-                <button
-                    onClick={() => setActiveTab('matches')}
-                    className={`px-6 py-3 rounded-lg font-bold transition w-full md:w-auto ${activeTab === 'matches' ? 'bg-primary text-white shadow-lg shadow-emerald-900/40' : 'bg-card text-muted hover:bg-white/5 border border-white/5'}`}
-                >
-                    Matchs
-                </button>
-            </div>
+            <div className="max-w-6xl mx-auto p-4 md:p-8">
+                {/* Tabs */}
+                <div className="flex gap-6 mb-8 border-b border-white/5 pb-1">
+                    <button
+                        onClick={() => setActiveTab('teams')}
+                        className={`pb-3 text-[10px] uppercase tracking-widest transition-all relative ${activeTab === 'teams' ? 'text-white font-bold' : 'text-white/30 hover:text-white/60'}`}
+                    >
+                        Équipes
+                        {activeTab === 'teams' && <span className="absolute bottom-[-1px] left-0 w-full h-[1px] bg-primary"></span>}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('matches')}
+                        className={`pb-3 text-[10px] uppercase tracking-widest transition-all relative ${activeTab === 'matches' ? 'text-white font-bold' : 'text-white/30 hover:text-white/60'}`}
+                    >
+                        Matchs
+                        {activeTab === 'matches' && <span className="absolute bottom-[-1px] left-0 w-full h-[1px] bg-primary"></span>}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('news')}
+                        className={`pb-3 text-[10px] uppercase tracking-widest transition-all relative ${activeTab === 'news' ? 'text-white font-bold' : 'text-white/30 hover:text-white/60'}`}
+                    >
+                        News
+                        {activeTab === 'news' && <span className="absolute bottom-[-1px] left-0 w-full h-[1px] bg-primary"></span>}
+                    </button>
+                </div>
 
-            <div className="bg-card rounded-xl border border-white/10 p-6 shadow-xl">
-                {activeTab === 'teams' && <TeamManager initialData={data} />}
-                {activeTab === 'matches' && <MatchManager initialData={data} />}
+                {/* Content Area */}
+                <div className="animate-in slide-in-from-bottom-2 duration-500">
+                    {activeTab === 'teams' && <TeamManager initialData={data} />}
+                    {activeTab === 'matches' && <MatchManager initialData={data} />}
+                    {activeTab === 'news' && <NewsManager news={data.news || []} onNewsUpdate={() => window.location.reload()} />}
+                </div>
             </div>
         </div>
     );

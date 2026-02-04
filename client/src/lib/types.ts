@@ -46,8 +46,18 @@ export interface Match {
     cards?: Card[];
 }
 
+export interface News {
+    id: number;
+    title: string;
+    summary: string;
+    image: string;
+    content?: string;
+    date: string;
+}
+
 export interface AppData {
     teams: Team[];
     players: Player[];
     matches: Match[];
+    news: News[];
 }

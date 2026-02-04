@@ -8,24 +8,70 @@ import MatchesView from './views/MatchesView';
 import ScorersView from './views/ScorersView';
 import TeamsView from './views/TeamsView';
 import BracketView from './views/BracketView';
+import HomeView from './views/HomeView';
+import NewsView from './views/NewsView';
 import TeamModal from './TeamModal';
 import { io } from 'socket.io-client';
 
-type View = 'standings' | 'matches' | 'scorers' | 'teams' | 'bracket';
+type View = 'home' | 'standings' | 'matches' | 'scorers' | 'teams' | 'bracket' | 'news';
 
 export default function Dashboard({ data }: { data: AppData }) {
-    const [currentView, setCurrentView] = useState<View>('matches');
+    const [currentView, setCurrentView] = useState<View>('home');
     const [appData, setAppData] = useState<AppData>(data);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const menuItems = [
-        { id: 'standings', label: 'Classement', mobileLabel: 'Classement', icon: '📊' },
-        { id: 'matches', label: 'Matchs', mobileLabel: 'Matchs', icon: '⚽' },
-        { id: 'bracket', label: 'Tableau', mobileLabel: 'Tableau', icon: '🏆' },
-        { id: 'scorers', label: 'Buteurs', mobileLabel: 'Buteurs', icon: '👟' },
-        { id: 'teams', label: 'Équipes', mobileLabel: 'Équipes', icon: '👕' }
+        {
+            id: 'home', label: 'Accueil', mobileLabel: 'Home', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504 1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            )
+        },
+
+        {
+            id: 'matches', label: 'Matchs', mobileLabel: 'Matchs', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+            )
+        }, // Generic Sport/Match Icon
+        {
+            id: 'standings', label: 'Classement', mobileLabel: 'Classement', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+            )
+        },
+        {
+            id: 'bracket', label: 'Tableau', mobileLabel: 'Tableau', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0V5.625a2.25 2.25 0 11-4.5 0v3.75M12 12v-1.125" />
+                </svg>
+            )
+        },
+        {
+            id: 'scorers', label: 'Buteurs', mobileLabel: 'Buteurs', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+            )
+        },
+        {
+            id: 'news', label: 'Actualités', mobileLabel: 'News', icon: (active: boolean) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                </svg>
+            )
+        }
+        // {
+        //     id: 'teams', label: 'Équipes', mobileLabel: 'Équipes', icon: (active: boolean) => (
+        //         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? "0" : "2"} className="w-6 h-6">
+        //             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.959 11.959 0 0115 2.714 11.959 11.959 0 019 2.714z" />
+        //         </svg>
+        //     )
+        // }
     ];
 
     const handleTeamClick = (teamId: number) => {
@@ -119,82 +165,75 @@ export default function Dashboard({ data }: { data: AppData }) {
 
     return (
         <div className="flex flex-col min-h-screen relative">
-            {/* Mobile Menu Overlay */}
-            <div
-                className={`fixed inset-0 bg-black/80 z-[60] backdrop-blur-sm transition-opacity duration-300 md:hidden ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            {/* Mobile Sidebar */}
-            <div className={`fixed top-0 left-0 h-full w-[80%] max-w-[300px] bg-[#0a0a0a] border-r border-white/10 z-[70] transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-3 mb-8 pl-2 font-sans">
-                        <img src="/jci-logo.png" className="h-8 w-auto object-contain" alt="Logo" />
-                        <span className="font-bold text-sm uppercase tracking-wider leading-tight text-white/90">Beni Hassen<br />Tkawer</span>
-                    </div>
-
-                    <ul className="flex flex-col gap-1 font-sans">
-                        {menuItems.map(item => (
-                            <li
-                                key={item.id}
-                                onClick={() => {
-                                    setCurrentView(item.id as View);
-                                    setIsMobileMenuOpen(false);
-                                }}
-                                className={`px-4 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-3 ${currentView === item.id ? 'bg-primary/20 text-primary border border-primary/20' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
-                            >
-                                <span className="text-sm opacity-80">{item.icon}</span>
-                                <span>{item.mobileLabel}</span>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <div className="mt-auto pt-6 border-t border-white/10 text-xs text-muted text-center opacity-50">
-                        &copy; 2026 JCI Beni Hassen
-                    </div>
-                </div>
-            </div>
-
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-dark/85 backdrop-blur-md border-b-2 border-white border-opacity-20 shadow-xl px-0 py-0 flex flex-col md:flex-row justify-between items-center gap-0">
-                <div className="w-full md:w-auto flex justify-start items-center relative md:static">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        className="md:hidden absolute left-4 z-10 p-2 text-white drop-shadow-md hover:text-white/80 transition active:scale-95 bg-black/20 rounded-full"
-                    >
-                        <span className="text-2xl">☰</span>
-                    </button>
-                    <div className="w-full h-24 md:h-20 overflow-hidden relative">
-                        <img src="/banner.jpg" alt="Banner" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent md:hidden"></div>
-                    </div>
-                </div>
+            <header className={`sticky top-0 z-50 bg-[#005031] border-b border-white/10 shadow-lg flex flex-col justify-center relative overflow-hidden transition-all duration-500 ${currentView === 'home' ? 'h-48 md:h-80' : 'h-24 md:h-32'}`}>
+                {/* Full width Banner Background - Only on Home */}
+                {currentView === 'home' ? (
+                    <>
+                        <img src="/squad.jpg" alt="Banner" className="absolute inset-0 w-full h-full object-cover z-0 animate-in fade-in duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60 z-0"></div>
+                    </>
+                ) : (
+                    <>
+                        {/* Banner for non-home pages */}
+                        <img src="/banner.jpg" alt="Banner" className="absolute inset-0 w-full h-full object-cover z-0 animate-in fade-in duration-700" />
+                        <div className="absolute inset-0 bg-black/30 z-0"></div>
+                    </>
+                )}
 
-                <nav className="hidden md:block w-full md:w-auto px-1 md:px-0">
-                    <ul className="grid grid-cols-[1fr_1fr_0.5fr_1fr_1fr] gap-0.5 md:gap-2 bg-card p-1 rounded-2xl border border-white/10 w-full md:w-auto">
-                        {menuItems.map(item => (
-                            <li
-                                key={item.id}
-                                onClick={() => setCurrentView(item.id as View)}
-                                className={`py-2 rounded-lg cursor-pointer transition-all text-[9px] min-[360px]:text-[10px] md:text-sm font-medium flex items-center justify-center text-center tracking-tighter ${currentView === item.id ? 'bg-primary text-white shadow-[0_0_15px_rgba(12,153,98,0.4)] border border-white/20 -translate-y-[1px]' : 'text-muted hover:text-white'}`}
-                            >
-                                {item.label}
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
+                <div className="relative z-10 flex justify-end items-center px-4 md:px-8 w-full">
+
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:block">
+                        <ul className="flex items-center gap-1 bg-black/40 p-1.5 rounded-full border border-white/10 backdrop-blur-md">
+                            {menuItems.map(item => (
+                                <li
+                                    key={item.id}
+                                    onClick={() => setCurrentView(item.id as View)}
+                                    className={`px-6 py-2 rounded-full cursor-pointer transition-all text-xs font-oswald font-bold uppercase tracking-widest ${currentView === item.id ? 'bg-[#0C9962] text-white shadow-lg shadow-emerald-900/20 transform scale-105' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                                >
+                                    {item.label}
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
             </header>
 
-            <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-20">
+            <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-24 md:pb-20">
+                {currentView === 'home' && <HomeView data={appData} onViewChange={(view) => setCurrentView(view as View)} />}
                 {currentView === 'standings' && <StandingsView data={appData} onTeamClick={handleTeamClick} />}
                 {currentView === 'matches' && <MatchesView data={appData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
                 {currentView === 'bracket' && <BracketView data={appData} onTeamClick={handleTeamClick} />}
                 {currentView === 'scorers' && <ScorersView data={appData} />}
                 {currentView === 'teams' && <TeamsView data={appData} />}
+                {currentView === 'news' && <NewsView data={appData} />}
             </main>
 
+            {/* Bottom Mobile Navigation */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#003d25] border-t border-white/10 md:hidden bg-opacity-95 backdrop-blur-lg safe-area-bottom">
+                <div className="flex justify-around items-center h-16 px-1">
+                    {menuItems.map(item => {
+                        const active = currentView === item.id;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => setCurrentView(item.id as View)}
+                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-95 ${active ? 'text-[#0C9962]' : 'text-white/50 hover:text-white/80'}`}
+                            >
+                                {item.icon(active)}
+                                <span className={`text-[9px] font-oswald uppercase tracking-wider font-bold ${active ? 'text-white' : ''}`}>
+                                    {item.mobileLabel}
+                                </span>
+                                {active && <div className="absolute top-0 w-8 h-[2px] bg-[#0C9962] shadow-[0_0_10px_#0C9962]"></div>}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
             {/* Footer */}
-            <footer className="text-center py-8 text-muted text-sm border-t border-white/10 mt-auto">
+            <footer className="text-center py-8 text-muted text-sm border-t border-white/10 mt-auto hidden md:block">
                 &copy; 2026 Beni Hassen Tkawer. <br className="md:hidden" /> Organisé par JCI Beni Hassen.
             </footer>
 

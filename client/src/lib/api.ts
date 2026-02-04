@@ -1,4 +1,5 @@
-import { Team, Player, Match } from './types';
+
+import { Team, Player, Match, News } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -17,6 +18,12 @@ export const getPlayers = async (options?: RequestInit): Promise<Player[]> => {
 export const getMatches = async (options?: RequestInit): Promise<Match[]> => {
     const res = await fetch(`${API_URL}/matches`, options);
     if (!res.ok) throw new Error('Failed to fetch matches');
+    return res.json();
+};
+
+export const getNews = async (options?: RequestInit): Promise<News[]> => {
+    const res = await fetch(`${API_URL}/news`, options);
+    if (!res.ok) throw new Error('Failed to fetch news');
     return res.json();
 };
 
@@ -115,6 +122,36 @@ export const deleteMatch = async (id: number): Promise<void> => {
     });
     if (!res.ok) throw new Error('Failed to delete match');
 };
+
+// NEWS
+export const createNews = async (news: Partial<News>): Promise<News> => {
+    const res = await fetch(`${API_URL}/news`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(news),
+    });
+    if (!res.ok) throw new Error('Failed to create news');
+    return res.json();
+};
+
+export const updateNews = async (id: number, news: Partial<News>): Promise<News> => {
+    const res = await fetch(`${API_URL}/news/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(news),
+    });
+    if (!res.ok) throw new Error('Failed to update news');
+    return res.json();
+};
+
+export const deleteNews = async (id: number): Promise<void> => {
+    const res = await fetch(`${API_URL}/news/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete news');
+};
+
 
 export const login = async (credentials: { username: string; password: string; }): Promise<{ success: boolean; message?: string; token?: string }> => {
     const res = await fetch(`${API_URL}/login`, {
