@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import helmet from 'helmet';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
@@ -13,16 +14,43 @@ import authRouter from './routes/auth.js';
 
 dotenv.config();
 
+// Suppress console.log in production to keep logs clean and secure
+if (process.env.NODE_ENV === 'production') {
+    const originalConsoleLog = console.log;
+    console.log = function (...args) {
+        // You can uncomment this if you need specific logs, or use a proper logger like 'winston'
+        // originalConsoleLog(...args); 
+    };
+    // Keep console.error and console.warn for critical issues
+}
+
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(helmet());
+
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.CLIENT_URL
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
 app.use(express.json());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: "*", // Allow all origins for simplicity in development, restrict in production
+        origin: allowedOrigins,
         methods: ["GET", "POST", "PUT", "DELETE"]
     }
 });
@@ -42,7 +70,12 @@ io.on('connection', (socket) => {
 });
 
 if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD) {
-    console.log(`Admin credentials loaded for user: ${process.env.ADMIN_USERNAME}`);
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`Admin credentials loaded for user: ${process.env.ADMIN_USERNAME}`);
+    } else {
+        // Don't log usernames in production
+        // console.log('Admin credentials loaded.'); 
+    }
 } else {
     console.warn('WARNING: Admin credentials not found in environment variables!');
 }

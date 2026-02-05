@@ -1,11 +1,22 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_key_123';
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("FATAL: JWT_SECRET environment variable is not defined.");
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login requests per windowMs
+    message: "Too many login attempts, please try again after 15 minutes"
+});
 
 // Login
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
         const token = jwt.sign({ username: username, role: 'admin' }, JWT_SECRET, { expiresIn: '30d' });
