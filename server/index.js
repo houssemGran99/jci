@@ -31,19 +31,32 @@ app.use(helmet());
 
 const allowedOrigins = [
     "http://localhost:3000",
-    process.env.CLIENT_URL
+    "https://jcitkawer.vercel.app" // Hardcode for certainty or ensure env var is exact
 ];
+// Add env var if it exists and isn't already in the list
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
 
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
+
+        // Check if origin matches one of the allowed origins
+        // We trim trailing slashes for comparison just in case
+        const isAllowed = allowedOrigins.some(allowed =>
+            allowed.replace(/\/$/, "") === origin.replace(/\/$/, "")
+        );
+
+        if (isAllowed) {
             callback(null, true);
         } else {
+            console.error(`CORS Blocked: ${origin}`); // Log blocked origins for debugging
             callback(new Error('Not allowed by CORS'));
         }
-    }
+    },
+    credentials: true // Important for cookies/sessions if used, and often helps socket.io
 }));
 app.use(express.json());
 
@@ -51,7 +64,8 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
         origin: allowedOrigins,
-        methods: ["GET", "POST", "PUT", "DELETE"]
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true
     }
 });
 
