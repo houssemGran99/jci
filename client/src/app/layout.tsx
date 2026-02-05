@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Oswald, Inter } from 'next/font/google';
+import GoalNotification from '@/components/ui/GoalNotification';
 
 
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald', display: 'swap' });
@@ -27,6 +28,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <GoalNotification />
 
       </body>
     </html>
