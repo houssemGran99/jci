@@ -62,7 +62,7 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
         });
 
         // Sort function
-        const sortStats = (a: any, b: any) => {
+        const sortStats = (a: { points: number; diff: number; gf: number; }, b: { points: number; diff: number; gf: number; }) => {
             if (b.points !== a.points) return b.points - a.points;
             if (b.diff !== a.diff) return b.diff - a.diff;
             return b.gf - a.gf;
@@ -83,7 +83,7 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
         {
             id: 1,
             title: "Bienvenue sur Beni Hassen Tkawer",
-            date: new Date().toISOString(),
+            date: "2024-06-01T12:00:00Z", // Static date to avoid hydration error
             image: "https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
             summary: "L'application officielle du tournoi."
         }

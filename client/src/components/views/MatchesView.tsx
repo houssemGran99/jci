@@ -15,7 +15,18 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
     const sortedMatches = useMemo(() => {
         let filtered = data.matches;
         if (selectedDay === 'today') {
-            const today = new Date().toISOString().slice(0, 10);
+            // Use a consistent date check that doesn't depend on client/server time shift for "today" during hydration
+            // Better: Filter by match object's "matchDay" if possible, or just ignore exact date check for hydration safety
+            // For now, we will use a safe check that relies on props or fixed logic if possible, 
+            // but to fix the immediate error: ensure we don't render different lists on server vs client.
+            // A common trick is to use a mounted check, but here we'll assume the input data is consistent.
+
+            // Safe approach: Convert to simple string without timezone issues if possible, or use UTC
+            const getUtcToday = () => {
+                const now = new Date();
+                return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString().slice(0, 10);
+            };
+            const today = getUtcToday();
             filtered = filtered.filter(m => new Date(m.date).toISOString().slice(0, 10) === today);
         } else if (selectedDay !== 'all') {
             filtered = filtered.filter(m => m.matchDay === selectedDay);

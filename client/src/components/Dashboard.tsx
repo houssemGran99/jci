@@ -114,11 +114,11 @@ export default function Dashboard({ data }: { data: AppData }) {
         const socketUrl = apiUrl.replace(/\/api\/?$/, '');
 
 
-        console.log('Connecting to socket at:', socketUrl);
+        console.log('Connecting to socket');
         const socket = io(socketUrl);
 
         socket.on('connect', () => {
-            console.log('Connected to socket server with ID:', socket.id);
+            console.log('Connected to socket server');
         });
 
         socket.on('connect_error', (err) => {
