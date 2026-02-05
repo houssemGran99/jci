@@ -161,7 +161,9 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
                         </div>
                         <div className="p-4 flex-1 flex flex-col">
                             <div className="mb-2">
-                                <span className="text-[10px] text-[#0C9962] font-bold uppercase">{new Date(item.date).toLocaleDateString()}</span>
+                                <span className="text-[10px] text-[#0C9962] font-bold uppercase" suppressHydrationWarning>
+                                    {new Date(item.date).toLocaleDateString('fr-FR')}
+                                </span>
                             </div>
                             <h3 className="font-bold text-white text-sm mb-1 line-clamp-1">{item.title}</h3>
                             <p className="text-xs text-gray-400 line-clamp-2">{item.summary}</p>

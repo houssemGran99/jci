@@ -230,7 +230,7 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
                             <div className="absolute bottom-0 left-0 p-4 w-full">
-                                <span className="inline-block bg-[#0C9962] text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded mb-2 shadow-lg">
+                                <span className="inline-block bg-[#0C9962] text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded mb-2 shadow-lg" suppressHydrationWarning>
                                     {new Date(item.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }).toUpperCase()}
                                 </span>
                                 <h3 className="text-lg font-bold leading-tight text-white mb-1 group-hover:text-[#0C9962] transition-colors line-clamp-2">{item.title}</h3>
