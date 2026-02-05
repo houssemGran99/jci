@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Team, Match } from '@/lib/types';
 import { getTeams, getMatches } from '@/lib/api';
@@ -20,6 +20,7 @@ export default function GoalNotification() {
     const [teams, setTeams] = useState<Team[]>([]);
     const [currentMatch, setCurrentMatch] = useState<Match | null>(null);
     const [visible, setVisible] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
         getTeams().then(setTeams).catch(console.error);
@@ -45,6 +46,12 @@ export default function GoalNotification() {
                 scorerName: data.scorerName
             });
             setVisible(true);
+
+            // Play goal sound effect
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0; // Reset to start
+                audioRef.current.play().catch(err => console.log('Audio play failed:', err));
+            }
 
             // Hide after 6 seconds
             setTimeout(() => {
@@ -137,6 +144,13 @@ export default function GoalNotification() {
                     animation: slide-up 0.5s ease-out 0.5s both;
                 }
             `}</style>
+
+            {/* Hidden audio element for goal sound */}
+            <audio
+                ref={audioRef}
+                src="/gol.wav"
+                preload="auto"
+            />
         </div>
     );
 }
