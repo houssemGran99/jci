@@ -19,7 +19,7 @@ export default function SelfPinger() {
                     baseUrl = baseUrl.slice(0, -4);
                 }
 
-                console.log(`[SelfPinger] Pinging server at ${baseUrl}...`);
+                console.log(`[SelfPinger] Pinging server`);
 
                 // We ping the root "/" which returns a simple text response
                 const res = await fetch(`${baseUrl}/`);
