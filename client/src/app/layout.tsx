@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Oswald, Inter } from 'next/font/google';
+import SelfPinger from "@/components/SelfPinger";
 
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald', display: 'swap' });
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -23,6 +24,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <SelfPinger />
       </body>
     </html>
   );
