@@ -37,7 +37,7 @@ export default function BracketView({ data, onTeamClick }: { data: AppData, onTe
                     >
                         <div className="flex items-center gap-2 overflow-hidden">
                             <span className="text-sm opacity-80 shrink-0">{home?.logo || '🛡️'}</span>
-                            <span className={`text-[11px] tracking-wide truncate ${homeWin ? 'font-bold text-white' : 'text-white/60 font-medium'}`}>{home?.name || 'TBD'}</span>
+                            <span className={`text-[11px] tracking-wide truncate leading-tight ${homeWin ? 'font-bold text-white' : 'text-white/70 font-medium'}`}>{home?.name || 'TBD'}</span>
                         </div>
                         <div className={`font-mono text-[10px] w-5 text-center ${homeWin ? 'text-white font-bold' : 'text-white/30'}`}>
                             {homeScore}
@@ -51,7 +51,7 @@ export default function BracketView({ data, onTeamClick }: { data: AppData, onTe
                     >
                         <div className="flex items-center gap-2 overflow-hidden">
                             <span className="text-sm opacity-80 shrink-0">{away?.logo || '🛡️'}</span>
-                            <span className={`text-[11px] tracking-wide truncate ${awayWin ? 'font-bold text-white' : 'text-white/60 font-medium'}`}>{away?.name || 'TBD'}</span>
+                            <span className={`text-[11px] tracking-wide truncate leading-tight ${awayWin ? 'font-bold text-white' : 'text-white/70 font-medium'}`}>{away?.name || 'TBD'}</span>
                         </div>
                         <div className={`font-mono text-[10px] w-5 text-center ${awayWin ? 'text-white font-bold' : 'text-white/30'}`}>
                             {awayScore}

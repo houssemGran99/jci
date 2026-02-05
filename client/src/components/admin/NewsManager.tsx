@@ -2,16 +2,28 @@
 import React, { useState } from 'react';
 import { News } from '@/lib/types';
 import { createNews, updateNews, deleteNews } from '@/lib/api';
+import ConfirmationModal from '../ui/ConfirmationModal';
 
 interface NewsManagerProps {
     news: News[];
     onNewsUpdate: () => void;
 }
-
 export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
     const [editingNews, setEditingNews] = useState<Partial<News>>({});
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [error, setError] = useState('');
+
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,20 +43,35 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (confirm('Are you sure you want to delete this news item?')) {
-            try {
-                await deleteNews(id);
-                onNewsUpdate();
-            } catch (err) {
-                setError('Failed to delete news');
-                console.error(err);
+    const handleDelete = (id: number) => {
+        setModalConfig({
+            isOpen: true,
+            title: 'Supprimer cet article',
+            message: 'Êtes-vous sûr de vouloir supprimer cette news ? Cette action est irréversible.',
+            onConfirm: async () => {
+                try {
+                    await deleteNews(id);
+                    onNewsUpdate();
+                } catch (err) {
+                    setError('Failed to delete news');
+                    console.error(err);
+                }
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
             }
-        }
+        });
     };
 
     return (
         <div className="space-y-6">
+            <ConfirmationModal
+                isOpen={modalConfig.isOpen}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                onConfirm={modalConfig.onConfirm}
+                onCancel={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                isDestructive={true}
+            />
+
             <div className="flex justify-between items-center border-b border-white/5 pb-2">
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/50">News ({news.length})</h3>
                 <button
@@ -88,7 +115,7 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
                                     value={editingNews.summary || ''}
                                     onChange={e => setEditingNews({ ...editingNews, summary: e.target.value })}
                                     className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0C9962]"
-                                    rows={2}
+                                    rows={5}
                                     required
                                 />
                             </div>
@@ -102,16 +129,6 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
                                     className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0C9962]"
                                     required
                                     placeholder="https://example.com/image.jpg"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">Contenu (Optionnel)</label>
-                                <textarea
-                                    value={editingNews.content || ''}
-                                    onChange={e => setEditingNews({ ...editingNews, content: e.target.value })}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0C9962]"
-                                    rows={4}
                                 />
                             </div>
 

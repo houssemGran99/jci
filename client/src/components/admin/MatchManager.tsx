@@ -547,9 +547,9 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                             ✕
                         </button>
 
-                        <div className="flex justify-center my-4 overflow-hidden rounded-lg border border-white/5">
-                            <div className="transform scale-[0.6] md:scale-75 origin-top md:origin-center">
-                                {/* Keep the scale to fit, or handle nicely */}
+                        <div className="flex justify-center my-4 overflow-hidden rounded-lg border border-white/5 bg-black">
+                            <div className="transform scale-[0.4] origin-top -mb-[450px]">
+                                {/* Scaled down preview */}
                                 <MatchResultTemplate
                                     ref={imageRef}
                                     match={matchForm as Match}

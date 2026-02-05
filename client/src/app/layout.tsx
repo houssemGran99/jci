@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 export const metadata: Metadata = {
   title: "Beni Hassen Tkawer",
   description: "Organisé par JCI Beni Hassen",
+  icons: {
+    icon: '/uxaura.jpeg',
+  },
 };
 
 export default function RootLayout({

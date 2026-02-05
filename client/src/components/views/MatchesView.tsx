@@ -82,11 +82,11 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
                                     <div className="flex flex-col gap-2 flex-1">
                                         <div className="flex items-center gap-3">
                                             <div className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full">{home?.logo || '❓'}</div>
-                                            <span className={`font-bold font-sans text-sm capitalize ${homeWon ? 'text-white' : 'text-gray-300'}`}>{home?.name || 'Unknown'}</span>
+                                            <span className={`font-medium break-words leading-tight ${homeWon ? 'text-white' : 'text-white/70'} text-[12px] md:text-sm capitalize`}>{home?.name || 'Unknown'}</span>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full">{away?.logo || '❓'}</div>
-                                            <span className={`font-bold font-sans text-sm capitalize ${awayWon ? 'text-white' : 'text-gray-300'}`}>{away?.name || 'Unknown'}</span>
+                                            <span className={`font-medium break-words leading-tight ${awayWon ? 'text-white' : 'text-white/70'} text-[12px] md:text-sm capitalize`}>{away?.name || 'Unknown'}</span>
                                         </div>
                                     </div>
 

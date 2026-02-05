@@ -11,8 +11,8 @@ interface MatchResultTemplateProps {
 
 const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>(({ match, homeTeam, awayTeam, players }, ref) => {
     const date = new Date(match.date);
-    const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
-    const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase().replace(/ /g, ',');
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     // Helper to get scorers
     const getScorers = (teamId: number) => {
@@ -34,146 +34,141 @@ const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>
         return teamScorers;
     };
 
-    // Helper to get cards
     const getCards = (teamId: number) => {
         if (!match.cards) return [];
-        return match.cards.filter(c => {
-            const p = players.find(pl => pl.id === c.playerId);
-            return p && p.teamId === teamId && c.type === 'yellow';
-        }).map(c => {
-            const p = players.find(pl => pl.id === c.playerId);
-            return { name: p?.name || 'Unknown' };
-        });
+        return match.cards
+            .filter(c => c.type === 'yellow')
+            .map(c => {
+                const p = players.find(pl => pl.id === c.playerId);
+                return (p && p.teamId === teamId) ? { name: p.name } : null;
+            })
+            .filter((item): item is { name: string } => item !== null);
     };
 
     const homeScorers = getScorers(homeTeam.id);
     const awayScorers = getScorers(awayTeam.id);
-    const homeCards = getCards(homeTeam.id);
-    const awayCards = getCards(awayTeam.id);
 
     return (
-        <div ref={ref} className="w-[800px] min-h-[800px] bg-gradient-to-b from-[#1a5f4a] to-[#2d8a6e] relative text-white font-sans flex flex-col shrink-0">
-            {/* Background Texture/Overlay */}
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-black/40 to-transparent pointer-events-none"></div>
+        <div ref={ref} className="w-[800px] min-h-[800px] bg-gradient-to-b from-[#1a4a40] to-[#2d7a5e] relative text-white font-sans flex flex-col overflow-hidden shrink-0">
+            {/* Background Texture - radial sheen */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent pointer-events-none"></div>
 
             {/* Header */}
             <div className="flex justify-between items-start p-8 relative z-10">
-                <div className="flex items-center gap-4">
-                    {/* <img src="/logo.png" className="h-16 w-16 opacity-80" alt="League Logo" />  */}
-                    <div className="font-black text-2xl uppercase leading-none tracking-widest text-gray-200" style={{ textShadow: '2px 2px 0px rgba(0,0,0,0.5)' }}>
+                {/* Left: Stadium */}
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full border-2 border-white/50 flex items-center justify-center bg-white/10 backdrop-blur-sm shadow-inner p-1">
+                        <img src="/ball.png" alt="Ball" className="w-full h-full object-contain drop-shadow-md" />
+                    </div>
+                    <div className="font-extrabold text-xl uppercase leading-tight tracking-wider text-gray-100">
                         STADE<br />SIDI SALEM
                     </div>
                 </div>
-                {/* The following div was removed:
-                <div>
-                    <img src="/jci.png" className="h-20 w-auto drop-shadow-lg" alt="JCI Logo" />
+
+                {/* Right: JCI Logo */}
+                <div className="flex flex-col items-end">
+                    <img src="/jci-logo.png" alt="Logo" className="h-14 w-auto drop-shadow-lg mb-1" />
+                    <span className="text-[#eab308] font-bold text-xs uppercase tracking-widest">Beni Hassen</span>
                 </div>
-                */}
             </div>
 
-            {/* Header / Logo */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
-                <img src="/jci-logo.png" alt="Logo" className="h-24 w-auto mb-2 drop-shadow-xl animate-pulse-slow" />
-                <h1 className="text-3xl font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 drop-shadow-sm">JCI Beni Hassen</h1>
-            </div>
-
-            {/* Main Title */}
-            <div className="text-center relative z-10 mt-4">
-                <h2 className="text-6xl font-black uppercase tracking-widest text-white drop-shadow-md">FULL TIME</h2>
-                <h1 className="text-9xl font-black uppercase tracking-widest text-transparent text-stroke-2 text-stroke-white opacity-90" style={{ WebkitTextStroke: '3px rgba(255,255,255,0.8)', color: 'transparent' }}>
+            {/* Title Section */}
+            <div className="text-center relative z-10 -mt-2">
+                <h2 className="text-5xl font-black uppercase text-white drop-shadow-md tracking-widest">FULL TIME</h2>
+                <h1 className="text-8xl font-black uppercase text-transparent tracking-widest leading-none" style={{ WebkitTextStroke: '2px #4ade80' }}>
                     SCORE
                 </h1>
             </div>
 
-            {/* Teams and Score Section */}
-            <div className="flex items-center justify-between px-12 mt-8 relative z-10">
-                {/* Home Team */}
-                <div className="flex flex-col items-center w-1/3">
-                    <div className="w-40 h-40 bg-black/20 rounded-full flex items-center justify-center p-4 backdrop-blur-sm border-4 border-white/10 mb-4 shadow-2xl relative">
-                        {/* Crest/Logo */}
-                        <div className="text-[100px]">{homeTeam.logo}</div>
-                        <div className="absolute -bottom-6 bg-black/80 px-6 py-2 rounded-lg border border-white/20 whitespace-nowrap min-w-[180px] text-center">
-                            <span className="font-bold text-xl uppercase tracking-widest">{homeTeam.name}</span>
+            {/* Main Content Strip */}
+            <div className="relative mt-8 w-full bg-gradient-to-r from-transparent via-white/10 to-transparent py-6 backdrop-blur-[2px] border-y border-white/5">
+                <div className="flex items-center justify-center gap-12 px-8">
+                    {/* Home Team */}
+                    <div className="flex flex-col items-center w-1/3">
+                        <div className="w-32 h-32 flex items-center justify-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform">
+                            <span className="text-8xl filter drop-shadow-lg">{homeTeam.logo}</span>
                         </div>
+                        <h3 className="mt-4 font-black text-xl uppercase tracking-widest text-center text-white/90 leading-tight">{homeTeam.name}</h3>
                     </div>
-                </div>
 
-                {/* Score Board */}
-                <div className="flex items-center justify-center gap-8 w-1/3 relative">
-                    <span className="text-9xl font-black text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">{match.scoreHome}</span>
-                    <div className="flex flex-col items-center justify-center">
-                        <span className="text-7xl font-black text-yellow-400 italic" style={{ textShadow: '4px 4px 0px #b45309' }}>VS</span>
-                    </div>
-                    <span className="text-9xl font-black text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">{match.scoreAway}</span>
-                </div>
+                    {/* Scores & VS */}
+                    <div className="flex items-center gap-6">
+                        <span className="text-7xl font-black text-white drop-shadow-lg bg-white/10 rounded-lg px-4 py-2 min-w-[80px] text-center">{match.scoreHome}</span>
 
-                {/* Away Team */}
-                <div className="flex flex-col items-center w-1/3">
-                    <div className="w-40 h-40 bg-black/20 rounded-full flex items-center justify-center p-4 backdrop-blur-sm border-4 border-white/10 mb-4 shadow-2xl relative">
-                        <div className="text-[100px]">{awayTeam.logo}</div>
-                        <div className="absolute -bottom-6 bg-black/80 px-6 py-2 rounded-lg border border-white/20 whitespace-nowrap min-w-[180px] text-center">
-                            <span className="font-bold text-xl uppercase tracking-widest">{awayTeam.name}</span>
+                        <div className="flex flex-col items-center relative">
+                            {/* Stylized VS */}
+                            <div className="relative">
+                                <span className="text-6xl font-black italic text-yellow-400 drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" style={{ textShadow: '4px 4px 0px #b45309' }}>VS</span>
+                            </div>
                         </div>
+
+                        <span className="text-7xl font-black text-white drop-shadow-lg bg-white/10 rounded-lg px-4 py-2 min-w-[80px] text-center">{match.scoreAway}</span>
+                    </div>
+
+                    {/* Away Team */}
+                    <div className="flex flex-col items-center w-1/3">
+                        <div className="w-32 h-32 flex items-center justify-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform">
+                            <span className="text-8xl filter drop-shadow-lg">{awayTeam.logo}</span>
+                        </div>
+                        <h3 className="mt-4 font-black text-xl uppercase tracking-widest text-center text-white/90 leading-tight">{awayTeam.name}</h3>
                     </div>
                 </div>
             </div>
 
             {/* Scorers Section */}
-            <div className="grid grid-cols-2 gap-12 px-12 mt-12 relative z-10 flex-1">
+            <div className="flex justify-between px-16 mt-10 relative z-10 flex-1">
                 {/* Home Scorers */}
-                <div className="text-right space-y-2">
+                <div className="w-1/2 pr-4 space-y-3">
                     {homeScorers.map((s, i) => (
-                        <div key={`s-${i}`} className="flex items-center justify-end gap-3 text-xl font-bold uppercase tracking-wider">
-                            <span className="opacity-90">{s.name}</span>
-                            <div className="flex space-x-1">
-                                {s.goals > 3 ? (
-                                    <span className="drop-shadow-md">⚽ x{s.goals}</span>
+                        <div key={i} className="flex items-center gap-3">
+                            <span className="font-bold text-lg uppercase tracking-wider text-white/90">{s.name}</span>
+                            <div className="flex items-center gap-1">
+                                {s.goals > 1 ? (
+                                    <span className="text-lg font-bold drop-shadow-md">⚽ x{s.goals}</span>
                                 ) : (
-                                    Array.from({ length: s.goals }).map((_, idx) => <span key={idx} className="drop-shadow-md">⚽</span>)
+                                    <span className="text-lg drop-shadow-md">⚽</span>
                                 )}
                             </div>
                         </div>
                     ))}
-                    {homeCards.map((c, i) => (
-                        <div key={`c-${i}`} className="flex items-center justify-end gap-3 text-xl font-bold uppercase tracking-wider text-yellow-300">
-                            <span className="opacity-80">{c.name}</span>
-                            <div className="w-4 h-6 bg-yellow-400 rounded-[2px] shadow-md border border-black/20"></div>
+                    {getCards(homeTeam.id).map((c, i) => (
+                        <div key={`card-${i}`} className="flex items-center gap-3">
+                            <span className="font-bold text-lg uppercase tracking-wider text-white/90">{c.name}</span>
+                            <div className="w-4 h-5 bg-yellow-400 rounded-[2px] shadow-md border border-yellow-600/50 transform -skew-x-6"></div>
                         </div>
                     ))}
                 </div>
 
                 {/* Away Scorers */}
-                <div className="text-left space-y-2">
+                <div className="w-1/2 pl-4 space-y-3 flex flex-col items-end text-right">
                     {awayScorers.map((s, i) => (
-                        <div key={`s-${i}`} className="flex items-center justify-start gap-3 text-xl font-bold uppercase tracking-wider">
-                            <div className="flex space-x-1">
-                                {s.goals > 3 ? (
-                                    <span className="drop-shadow-md">⚽ x{s.goals}</span>
+                        <div key={i} className="flex items-center gap-3 justify-end">
+                            <div className="flex items-center gap-1">
+                                {s.goals > 1 ? (
+                                    <span className="text-lg font-bold drop-shadow-md">⚽ x{s.goals}</span>
                                 ) : (
-                                    Array.from({ length: s.goals }).map((_, idx) => <span key={idx} className="drop-shadow-md">⚽</span>)
+                                    <span className="text-lg drop-shadow-md">⚽</span>
                                 )}
                             </div>
-                            <span className="opacity-90">{s.name}</span>
+                            <span className="font-bold text-lg uppercase tracking-wider text-white/90">{s.name}</span>
                         </div>
                     ))}
-                    {awayCards.map((c, i) => (
-                        <div key={`c-${i}`} className="flex items-center justify-start gap-3 text-xl font-bold uppercase tracking-wider text-yellow-300">
-                            <div className="w-4 h-6 bg-yellow-400 rounded-[2px] shadow-md border border-black/20"></div>
-                            <span className="opacity-80">{c.name}</span>
+                    {getCards(awayTeam.id).map((c, i) => (
+                        <div key={`card-${i}`} className="flex items-center gap-3 justify-end">
+                            <div className="w-4 h-5 bg-yellow-400 rounded-[2px] shadow-md border border-yellow-600/50 transform -skew-x-6"></div>
+                            <span className="font-bold text-lg uppercase tracking-wider text-white/90">{c.name}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="p-8 text-center relative z-10 mt-auto">
-                <div className="inline-block px-8 py-2 bg-black/30 rounded-full backdrop-blur-md border border-white/10">
-                    <span className="text-2xl font-black uppercase tracking-[0.2em] text-white/90">
-                        {dateStr} • {timeStr}
-                    </span>
-                </div>
+            {/* Footer Date */}
+            <div className="mt-auto pt-12 pb-8 w-full text-center relative z-10">
+                <span className="text-2xl font-black uppercase tracking-[0.2em] text-white/80 drop-shadow-md">
+                    {dateStr}, {timeStr}
+                </span>
             </div>
-        </div>
+        </div >
     );
 });
 

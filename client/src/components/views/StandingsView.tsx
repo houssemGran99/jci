@@ -41,7 +41,7 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
                                             </td>
                                             <td className="py-1.5 px-1">
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="text-[10px] opacity-70 grayscale group-hover:grayscale-0 transition">{t.logo}</span>
+                                                    <span className="text-[10px] opacity-100 transition">{t.logo}</span>
                                                     <span className={`font-medium break-words leading-tight ${i < 2 ? 'text-white' : 'text-white/70'}`}>{t.name}</span>
                                                 </div>
                                             </td>

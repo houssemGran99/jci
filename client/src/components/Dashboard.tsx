@@ -110,7 +110,7 @@ export default function Dashboard({ data }: { data: AppData }) {
         // Ensure we connect to the server root, not the /api path
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-    
+
         const socketUrl = apiUrl.replace(/\/api\/?$/, '');
 
 
@@ -167,11 +167,15 @@ export default function Dashboard({ data }: { data: AppData }) {
     return (
         <div className="flex flex-col min-h-screen relative">
             {/* Header */}
-            <header className={`sticky top-0 z-50 bg-[#005031] border-b border-white/10 shadow-lg flex flex-col justify-center relative overflow-hidden transition-all duration-500 ${currentView === 'home' ? 'h-48 md:h-80' : 'h-24 md:h-32'}`}>
+            <header className={`sticky top-0 z-50 bg-[#005031] border-b border-white/10 shadow-lg flex flex-col justify-center relative overflow-hidden transition-all duration-500 ${currentView === 'home' ? 'h-48 md:h-56' : 'h-24 md:h-32'}`}>
                 {/* Full width Banner Background - Only on Home */}
                 {currentView === 'home' ? (
                     <>
-                        <img src="/squad.jpg" alt="Banner" className="absolute inset-0 w-full h-full object-cover z-0 animate-in fade-in duration-700" />
+                        {/* Mobile Banner */}
+                        <img src="/squad.jpg" alt="Banner" className="md:hidden absolute inset-0 w-full h-full object-cover z-0 animate-in fade-in duration-700" />
+                        {/* Desktop (Web) Banner */}
+                        <img src="/banner.jpg" alt="Banner" className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 animate-in fade-in duration-700" />
+
                         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60 z-0"></div>
                     </>
                 ) : (
@@ -182,26 +186,51 @@ export default function Dashboard({ data }: { data: AppData }) {
                     </>
                 )}
 
-                <div className="relative z-10 flex justify-end items-center px-4 md:px-8 w-full">
+                <div className="relative z-10 flex justify-between items-center px-4 md:px-8 w-full h-full">
+                    {/* Logo / Title */}
+                    {/* Logo / Title - Desktop Only to keep Mobile Banner clean */}
+                    <div className="hidden md:flex items-center gap-2">
+                        <span className="font-oswald font-bold text-white text-xl tracking-widest uppercase filter drop-shadow-lg">Beni Hassen <span className="text-[#0C9962]">Tkawer</span></span>
+                    </div>
 
-                    {/* Desktop Navigation */}
-                    <nav className="hidden md:block">
-                        <ul className="flex items-center gap-1 bg-black/40 p-1.5 rounded-full border border-white/10 backdrop-blur-md">
-                            {menuItems.map(item => (
-                                <li
-                                    key={item.id}
-                                    onClick={() => setCurrentView(item.id as View)}
-                                    className={`px-6 py-2 rounded-full cursor-pointer transition-all text-xs font-oswald font-bold uppercase tracking-widest ${currentView === item.id ? 'bg-[#0C9962] text-white shadow-lg shadow-emerald-900/20 transform scale-105' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                                >
-                                    {item.label}
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                    {/* Desktop Navigation REMOVED - Moved to Right Sidebar */}
                 </div>
             </header>
 
-            <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-24 md:pb-20">
+            {/* Desktop Right Sidebar Navigation */}
+            <aside className="hidden md:flex fixed right-0 top-0 bottom-0 w-24 bg-[#011a14]/95 backdrop-blur-xl border-l border-white/10 z-[60] flex-col items-center py-8 gap-2 shadow-2xl">
+                {/* Menu Title or Spacer */}
+
+
+                {/* Nav Items */}
+                <div className="flex flex-col gap-6 w-full">
+                    {menuItems.map(item => {
+                        const active = currentView === item.id;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => setCurrentView(item.id as View)}
+                                className={`flex flex-col items-center justify-center gap-1.5 py-2 w-full transition-all group relative ${active ? 'text-[#0C9962]' : 'text-white/40 hover:text-white'}`}
+                            >
+                                {/* Active Indicator Bar */}
+                                {active && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#0C9962] rounded-l-full shadow-[0_0_10px_#0C9962]"></div>}
+
+                                <div className={`transition-transform duration-300 group-hover:scale-110 ${active ? 'scale-110' : ''}`}>
+                                    {item.icon(active)}
+                                </div>
+                                <span className={`text-[10px] font-oswald uppercase tracking-wider font-bold ${active ? 'text-white' : ''}`}>
+                                    {item.label}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+
+            </aside>
+
+            {/* Main Content - Added Right Padding for Sidebar */}
+            <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-24 md:pb-20 md:pr-28">
                 {currentView === 'home' && <HomeView data={appData} onViewChange={(view) => setCurrentView(view as View)} />}
                 {currentView === 'standings' && <StandingsView data={appData} onTeamClick={handleTeamClick} />}
                 {currentView === 'matches' && <MatchesView data={appData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
@@ -212,7 +241,7 @@ export default function Dashboard({ data }: { data: AppData }) {
             </main>
 
             {/* Bottom Mobile Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#003d25] border-t border-white/10 md:hidden bg-opacity-95 backdrop-blur-lg safe-area-bottom">
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#011a14]/95 border-t border-white/10 md:hidden bg-opacity-95 backdrop-blur-lg safe-area-bottom">
                 <div className="flex justify-around items-center h-16 px-1">
                     {menuItems.map(item => {
                         const active = currentView === item.id;
@@ -234,8 +263,8 @@ export default function Dashboard({ data }: { data: AppData }) {
             </div>
 
             {/* Footer */}
-            <footer className="text-center py-8 text-muted text-sm border-t border-white/10 mt-auto hidden md:block">
-                &copy; 2026 Beni Hassen Tkawer. <br className="md:hidden" /> Organisé par JCI Beni Hassen.
+            <footer className="text-center py-8 text-muted text-sm border-t border-white/10 mt-auto hidden md:block md:pr-24">
+                &copy; 2026 JCI Tkawer. <br className="md:hidden" /> Made with ❤️ by <a href="https://uxaura.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#0C9962] hover:text-white transition-colors font-bold hover:underline">Uxaura</a>
             </footer>
 
             {/* Team Modal */}

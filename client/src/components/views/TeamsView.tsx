@@ -19,7 +19,7 @@ export default function TeamsView({ data }: TeamsViewProps) {
 
                         <div className="flex flex-col items-center pt-2 pb-3">
                             <div className="text-4xl mb-2 filter drop-shadow-lg opacity-90 group-hover:scale-110 transition duration-300">{t.logo}</div>
-                            <h3 className="text-[11px] font-bold uppercase tracking-wide text-center leading-tight mb-0.5" style={{ color: t.colors[0] }}>{t.name}</h3>
+                            <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-wide text-center leading-tight mb-0.5" style={{ color: t.colors[0] }}>{t.name}</h3>
                         </div>
 
                         <div className="border-t border-white/5 pt-2 mt-1">

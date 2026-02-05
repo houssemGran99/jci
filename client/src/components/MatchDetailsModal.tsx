@@ -66,6 +66,15 @@ export default function MatchDetailsModal({ match, data, onClose }: MatchDetails
                             </div>
                             {match.status === 'inprogress' ? (
                                 <span className="text-[9px] font-sans font-bold text-red-500 uppercase tracking-widest mt-0.5 animate-pulse">Live</span>
+                            ) : match.status === 'scheduled' ? (
+                                <div className="flex flex-col items-center mt-0.5">
+                                    <span className="text-[10px] font-sans font-medium text-white/50 uppercase tracking-widest">
+                                        {new Date(match.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                    </span>
+                                    <span className="text-[10px] font-sans font-bold text-[#0C9962] uppercase tracking-widest">
+                                        {new Date(match.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                </div>
                             ) : (
                                 <span className="text-[9px] font-sans font-medium text-white/30 uppercase tracking-widest mt-0.5">Full Time</span>
                             )}

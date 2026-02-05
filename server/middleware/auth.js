@@ -9,7 +9,10 @@ export const authenticateToken = (req, res, next) => {
     if (token == null) return res.status(401).json({ message: 'Unauthorized' });
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ message: 'Forbidden' });
+        if (err) {
+            console.error('JWT Verification Error:', err.message);
+            return res.status(403).json({ message: 'Forbidden: Invalid or expired token' });
+        }
         req.user = user;
         next();
     });

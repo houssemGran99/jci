@@ -73,7 +73,7 @@ export default function AdminDashboard({ data }: { data: AppData }) {
                 <div className="animate-in slide-in-from-bottom-2 duration-500">
                     {activeTab === 'teams' && <TeamManager initialData={data} />}
                     {activeTab === 'matches' && <MatchManager initialData={data} />}
-                    {activeTab === 'news' && <NewsManager news={data.news || []} onNewsUpdate={() => window.location.reload()} />}
+                    {activeTab === 'news' && <NewsManager news={data.news || []} onNewsUpdate={() => router.refresh()} />}
                 </div>
             </div>
         </div>

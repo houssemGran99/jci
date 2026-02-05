@@ -216,9 +216,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                         <h3 className="text-xs font-bold uppercase tracking-widest text-white/70">
                             {selectedTeam ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}
                         </h3>
-                        {isEditing && selectedTeam && (
-                            <span className="text-[10px] text-white/30 font-mono">ID: {selectedTeam.id}</span>
-                        )}
+                     
                     </div>
 
                     <div className="space-y-6">
@@ -282,13 +280,13 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                                     onChange={(e) => setNewPlayerName(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
-                                            if (isEditing) handleAddPlayer();
+                                            if (selectedTeam) handleAddPlayer();
                                             else handleAddPlayerToForm();
                                         }
                                     }}
                                 />
                                 <button
-                                    onClick={isEditing ? handleAddPlayer : handleAddPlayerToForm}
+                                    onClick={selectedTeam ? handleAddPlayer : handleAddPlayerToForm}
                                     className="text-[10px] uppercase font-bold text-primary hover:text-white disabled:opacity-30"
                                     disabled={!newPlayerName}
                                 >
@@ -298,7 +296,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
 
                             <div className="space-y-1 max-h-[250px] overflow-y-auto custom-scrollbar">
                                 {/* Staged Players */}
-                                {!isEditing && formPlayers.map((name, i) => (
+                                {!selectedTeam && formPlayers.map((name, i) => (
                                     <div key={i} className="flex justify-between items-center py-2 px-3 bg-white/[0.02] rounded border border-dashed border-white/10">
                                         <div className="flex items-center gap-2">
                                             <span className="text-[11px] text-white/70 italic">{name}</span>
@@ -332,7 +330,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                                 className="w-full bg-white text-black hover:bg-white/90 font-bold text-[10px] uppercase tracking-widest py-3 rounded transition-all disabled:opacity-50"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Chargement...' : (isEditing ? 'Enregistrer les modifications' : 'Créer l\'équipe')}
+                                {isLoading ? 'Chargement...' : (selectedTeam ? 'Enregistrer les modifications' : 'Créer l\'équipe')}
                             </button>
                         </div>
                     </div>

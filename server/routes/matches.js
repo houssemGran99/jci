@@ -32,7 +32,14 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { _id, ...updateData } = req.body;
-        const match = await Match.findOneAndUpdate({ id: req.params.id }, updateData, { new: true });
+        const matchId = parseInt(req.params.id);
+
+        const match = await Match.findOneAndUpdate({ id: matchId }, updateData, { new: true });
+
+        if (!match) {
+            return res.status(404).json({ error: 'Match not found' });
+        }
+
         console.log('Emitting matchUpdated event for match:', match.id);
         req.io.emit('matchUpdated', match);
         res.json(match);

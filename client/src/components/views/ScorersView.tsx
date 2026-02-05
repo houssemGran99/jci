@@ -30,9 +30,9 @@ export default function ScorersView({ data }: ScorersViewProps) {
                             </div>
 
                             <div className="min-w-0 pr-2">
-                                <div className={`text-[11px] font-medium truncate ${isTop3 ? 'text-white' : 'text-white/70'}`}>{p.name}</div>
+                                <div className={`text-[11px] font-medium truncate leading-tight ${isTop3 ? 'text-white' : 'text-white/70'}`}>{p.name}</div>
                                 <div className="flex items-center gap-1 mt-0.5">
-                                    <span className="text-[9px] text-white/30 truncate uppercase tracking-wide">{team?.name}</span>
+                                    <span className="text-[9px] text-white/50 truncate uppercase tracking-wide font-medium leading-tight">{team?.name}</span>
                                 </div>
                             </div>
 
