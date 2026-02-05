@@ -23,7 +23,7 @@ export default function NewsView({ data }: NewsViewProps) {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
- 
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {news.map(item => (
@@ -31,7 +31,7 @@ export default function NewsView({ data }: NewsViewProps) {
                         <div className="h-48 relative overflow-hidden">
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                             <div className="absolute top-2 left-2">
-                                <span className="bg-[#0C9962] text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow-lg">
+                                <span className="bg-[#0C9962] text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow-lg" suppressHydrationWarning>
                                     {new Date(item.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                 </span>
                             </div>
