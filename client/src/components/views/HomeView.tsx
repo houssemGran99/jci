@@ -25,9 +25,8 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
     // 1. Get Next 3 Matches
     const getNextMatches = () => {
         const upcoming = data.matches
-            // For demo: show all matches, sorted by date. Real app: filter m.date > now
+            // Sorted by date ascending (earliest first)
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        // .slice(0, 3); // Removed limit to show all matches
         return upcoming;
     };
 

@@ -260,11 +260,7 @@ export default function MatchManager({ initialData }: { initialData: AppData }) 
                 </div>
 
                 <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
-                    {filteredMatches.sort((a, b) => {
-                        if (a.status === 'inprogress' && b.status !== 'inprogress') return -1;
-                        if (b.status === 'inprogress' && a.status !== 'inprogress') return 1;
-                        return new Date(b.date).getTime() - new Date(a.date).getTime();
-                    }).map(match => {
+                    {filteredMatches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map(match => {
                         const home = initialData.teams.find(t => t.id === match.teamHomeId);
                         const away = initialData.teams.find(t => t.id === match.teamAwayId);
 
