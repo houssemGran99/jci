@@ -2,6 +2,7 @@
 import React from 'react';
 import { AppData, Match, Team } from '@/lib/types';
 import MatchDetailsModal from '../MatchDetailsModal';
+import TeamLogo from '../ui/TeamLogo';
 
 interface HomeViewProps {
     data: AppData;
@@ -120,7 +121,9 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
 
                         {/* Team */}
                         <div className="flex items-center gap-2 font-medium text-white truncate">
-                            <span className="text-sm">{row.team.logo}</span>
+                            <div className="h-4 w-4 flex items-center justify-center opacity-100 transition">
+                                <TeamLogo logo={row.team.logo} className="w-full h-full text-[10px]" />
+                            </div>
                             <span className="truncate leading-tight text-[11px] md:text-xs text-white/90">{row.team.name}</span>
                         </div>
 
@@ -148,16 +151,7 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
     );
 
     // 3. News Data
-    const news = data.news && data.news.length > 0 ? data.news : [
-        // Fallback static data if no news (optional, remove if you want purely dynamic)
-        {
-            id: 1,
-            title: "Bienvenue sur Beni Hassen Tkawer",
-            date: "2024-06-01T12:00:00Z", // Static date to avoid hydration error
-            image: "https://images.unsplash.com/photo-1579952363873-27f3bde9be2e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            summary: "L'application officielle du tournoi."
-        }
-    ];
+    const news = data.news && data.news.length > 0 ? data.news : [];
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -208,7 +202,9 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
                                 <div className="flex justify-between items-center relative z-10">
                                     {/* Home */}
                                     <div className="flex flex-col items-center gap-2 w-1/3">
-                                        <span className="text-3xl drop-shadow-lg transform transition-transform group-hover:scale-110">{homeTeam?.logo}</span>
+                                        <div className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110">
+                                            <TeamLogo logo={homeTeam?.logo} className="w-full h-full text-3xl" />
+                                        </div>
                                         <span className="text-[10px] md:text-xs font-medium uppercase text-center leading-tight truncate w-full text-white/90">{homeTeam?.name}</span>
                                     </div>
 
@@ -236,7 +232,9 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
 
                                     {/* Away */}
                                     <div className="flex flex-col items-center gap-2 w-1/3">
-                                        <span className="text-3xl drop-shadow-lg transform transition-transform group-hover:scale-110">{awayTeam?.logo}</span>
+                                        <div className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110">
+                                            <TeamLogo logo={awayTeam?.logo} className="w-full h-full text-3xl" />
+                                        </div>
                                         <span className="text-[10px] md:text-xs font-medium uppercase text-center leading-tight truncate w-full text-white/90">{awayTeam?.name}</span>
                                     </div>
                                 </div>
@@ -294,8 +292,10 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
                     className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x"
                 >
                     {news.map(item => (
-                        <div key={item.id} className="min-w-[280px] w-[280px] snap-center group relative h-48 rounded-2xl overflow-hidden border border-white/10 shrink-0">
-                            <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div key={item.id} className="min-w-[280px] w-[280px] snap-center group relative h-48 rounded-2xl overflow-hidden border border-white/10 shrink-0 bg-black/40">
+                            {item.image && (
+                                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
                             <div className="absolute bottom-0 left-0 p-4 w-full">

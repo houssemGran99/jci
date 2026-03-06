@@ -1,5 +1,6 @@
 
 import { AppData, Match, Player } from '@/lib/types';
+import TeamLogo from './ui/TeamLogo';
 
 interface MatchDetailsModalProps {
     match: Match;
@@ -52,8 +53,10 @@ export default function MatchDetailsModal({ match, data, onClose }: MatchDetails
                 <div className="p-5 pb-4 border-b border-white/5">
                     <div className="flex items-center justify-between">
                         {/* Home Team */}
-                        <div className="flex flex-col items-center w-[30%]">
-                            <span className="text-3xl mb-1.5 filter drop-shadow-lg">{homeTeam?.logo}</span>
+                        <div className="flex flex-col items-center w-[30%] text-center">
+                            <div className="h-10 w-10 flex items-center justify-center mb-1.5 filter drop-shadow-lg">
+                                <TeamLogo logo={homeTeam?.logo} className="w-full h-full text-3xl" />
+                            </div>
                             <span className="text-[10px] font-sans font-medium uppercase tracking-wide text-white/90 text-center leading-3 w-full break-words">{homeTeam?.name}</span>
                         </div>
 
@@ -81,8 +84,10 @@ export default function MatchDetailsModal({ match, data, onClose }: MatchDetails
                         </div>
 
                         {/* Away Team */}
-                        <div className="flex flex-col items-center w-[30%]">
-                            <span className="text-3xl mb-1.5 filter drop-shadow-lg">{awayTeam?.logo}</span>
+                        <div className="flex flex-col items-center w-[30%] text-center">
+                            <div className="h-10 w-10 flex items-center justify-center mb-1.5 filter drop-shadow-lg">
+                                <TeamLogo logo={awayTeam?.logo} className="w-full h-full text-3xl" />
+                            </div>
                             <span className="text-[10px] font-sans font-medium uppercase tracking-wide text-white/90 text-center leading-3 w-full break-words">{awayTeam?.name}</span>
                         </div>
                     </div>

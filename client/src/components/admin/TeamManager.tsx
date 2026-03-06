@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { AppData, Team, Player } from '@/lib/types';
 import { createTeam, updateTeam, deleteTeam, createPlayer, deletePlayer } from '@/lib/api';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import TeamLogo from '@/components/ui/TeamLogo';
 
 export default function TeamManager({ initialData }: { initialData: AppData }) {
     const [teams, setTeams] = useState(initialData.teams);
@@ -185,7 +186,9 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                             className={`group flex items-center justify-between p-3 border-b border-white/5 cursor-pointer transition-colors ${selectedTeam?.id === team.id ? 'bg-white/5' : 'hover:bg-white/[0.02]'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <span className="text-lg opacity-80 group-hover:scale-110 transition-transform">{team.logo}</span>
+                                <div className="h-6 w-6 flex items-center justify-center opacity-80 group-hover:scale-110 transition-transform">
+                                    <TeamLogo logo={team.logo} className="h-full w-full object-contain text-lg" />
+                                </div>
                                 <div>
                                     <div className={`text-[13px] font-medium leading-none mb-1 ${selectedTeam?.id === team.id ? 'text-white' : 'text-white/70 group-hover:text-white'}`}>{team.name}</div>
                                     <div className="text-[9px] uppercase tracking-wider text-white/30">Groupe {team.group} • {players.filter(p => p.teamId === team.id).length} Joueurs</div>
@@ -216,7 +219,7 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                         <h3 className="text-xs font-bold uppercase tracking-widest text-white/70">
                             {selectedTeam ? 'Modifier l\'équipe' : 'Créer une nouvelle équipe'}
                         </h3>
-                     
+
                     </div>
 
                     <div className="space-y-6">
@@ -233,18 +236,45 @@ export default function TeamManager({ initialData }: { initialData: AppData }) {
                             </div>
                             <div className="space-y-1">
                                 <label className="block text-[9px] uppercase tracking-widest text-white/30 text-center">Logo</label>
-                                <div className="relative">
-                                    <select
-                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                                        value={teamForm.logo}
-                                        onChange={(e) => setTeamForm({ ...teamForm, logo: e.target.value })}
-                                    >
-                                        {['⚽', '🦁', '🦅', '🐺', '🐉', '🦈', '🐍', '🦂', '🐯', '🐻', '🦍', '🐂', '🐎', '🐊', '🐆', '🐅', '🐘', '🦖', '🦇', '🐝', '🕷️', '🦋', '🛡️', '⚡', '🔥', '⚔️', '🏹', '⚓', '👑', '🔱', '💎', '🌟', '🌪️', '☄️', '🚀', '🛸', '☠️', '👻', '👹', '👺'].map(emoji => (
-                                            <option key={emoji} value={emoji}>{emoji}</option>
-                                        ))}
-                                    </select>
-                                    <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded border border-white/10 text-xl">
-                                        {teamForm.logo}
+                                <div className="flex items-center gap-2">
+                                    <div className="relative">
+                                        <select
+                                            className="absolute inset-0 opacity-0 z-10 cursor-pointer w-full h-full"
+                                            value={teamForm.logo}
+                                            onChange={(e) => setTeamForm({ ...teamForm, logo: e.target.value })}
+                                        >
+                                            {['⚽', '🦁', '🦅', '🐺', '🐉', '🦈', '🐍', '🦂', '🐯', '🐻', '🦍', '🐂', '🐎', '🐊', '🐆', '🐅', '🐘', '🦖', '🦇', '🐝', '🕷️', '🦋', '🛡️', '⚡', '🔥', '⚔️', '🏹', '⚓', '👑', '🔱', '💎', '🌟', '🌪️', '☄️', '🚀', '🛸', '☠️', '👻', '👹', '👺'].map(emoji => (
+                                                <option key={emoji} value={emoji}>{emoji}</option>
+                                            ))}
+                                        </select>
+                                        <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded border border-white/10 text-xl overflow-hidden p-[2px]">
+                                            <TeamLogo logo={teamForm.logo} className="w-full h-full object-contain" />
+                                        </div>
+                                    </div>
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                try {
+                                                    setIsLoading(true);
+                                                    const url = await import('@/lib/api').then(m => m.uploadFile(file));
+                                                    setTeamForm({ ...teamForm, logo: url });
+                                                } catch (err) {
+                                                    alert("Erreur lors de l'upload de l'image");
+                                                } finally {
+                                                    setIsLoading(false);
+                                                }
+                                            }}
+                                        />
+                                        <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded border border-white/10 text-white/50 hover:text-white transition-colors cursor-pointer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

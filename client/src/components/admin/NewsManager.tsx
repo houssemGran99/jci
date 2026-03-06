@@ -12,6 +12,7 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
     const [editingNews, setEditingNews] = useState<Partial<News>>({});
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
 
     const [modalConfig, setModalConfig] = useState<{
         isOpen: boolean;
@@ -121,15 +122,45 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">Image URL</label>
-                                <input
-                                    type="url"
-                                    value={editingNews.image || ''}
-                                    onChange={e => setEditingNews({ ...editingNews, image: e.target.value })}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0C9962]"
-                                    required
-                                    placeholder="https://example.com/image.jpg"
-                                />
+                                <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">Image URL (Optionnel)</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="url"
+                                        value={editingNews.image || ''}
+                                        onChange={e => setEditingNews({ ...editingNews, image: e.target.value })}
+                                        className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0C9962]"
+                                        placeholder="https://example.com/image.jpg"
+                                    />
+                                    <div className="relative w-10 shrink-0">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                try {
+                                                    setIsUploading(true);
+                                                    const url = await import('@/lib/api').then(m => m.uploadFile(file));
+                                                    setEditingNews({ ...editingNews, image: url });
+                                                } catch (err) {
+                                                    alert("Erreur lors de l'upload de l'image");
+                                                } finally {
+                                                    setIsUploading(false);
+                                                }
+                                            }}
+                                        />
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-lg border border-white/10 text-white/50 hover:text-white transition-colors cursor-pointer">
+                                            {isUploading ? (
+                                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                            ) : (
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex justify-end gap-3 mt-6">
@@ -155,8 +186,12 @@ export default function NewsManager({ news, onNewsUpdate }: NewsManagerProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {news.map(item => (
                     <div key={item.id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col group">
-                        <div className="h-32 relative overflow-hidden">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div className="h-32 relative overflow-hidden bg-black/20 flex items-center justify-center">
+                            {item.image ? (
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            ) : (
+                                <span className="text-white/20 text-xs italic">Sans image</span>
+                            )}
                             <div className="absolute top-2 right-2 flex gap-1">
                                 <button
                                     onClick={() => { setEditingNews(item); setIsFormOpen(true); }}

@@ -1,5 +1,6 @@
 
 import { AppData, Team } from "@/lib/types";
+import TeamLogo from "./ui/TeamLogo";
 
 interface TeamModalProps {
     team: Team;
@@ -14,7 +15,9 @@ export default function TeamModal({ team, players, onClose }: TeamModalProps) {
 
                 {/* Header */}
                 <div className="flex flex-col items-center mb-6">
-                    <div className="text-5xl mb-3 filter drop-shadow-lg">{team.logo}</div>
+                    <div className="h-20 w-20 flex items-center justify-center mb-3 filter drop-shadow-lg text-5xl">
+                        <TeamLogo logo={team.logo} className="w-full h-full object-contain" />
+                    </div>
                     <h2 className="text-lg font-bold text-white tracking-wide text-center leading-tight mb-1" style={{ color: team.colors[0] }}>{team.name}</h2>
                     <div className="text-[10px] font-medium uppercase tracking-widest text-white/30 bg-white/5 px-2 py-0.5 rounded">Groupe {team.group}</div>
                 </div>

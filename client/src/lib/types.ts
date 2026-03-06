@@ -50,7 +50,7 @@ export interface News {
     id: number;
     title: string;
     summary: string;
-    image: string;
+    image?: string;
     content?: string;
     date: string;
 }

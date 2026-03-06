@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Team, Match } from '@/lib/types';
 import { getTeams, getMatches } from '@/lib/api';
+import TeamLogo from './TeamLogo';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
 
@@ -97,9 +98,9 @@ export default function GoalNotification() {
 
                     {/* Team Info */}
                     <div className="flex flex-col items-center gap-4 animate-slide-up">
-                        <span className="text-8xl drop-shadow-2xl filter transform hover:scale-110 transition-transform duration-300">
-                            {team.logo}
-                        </span>
+                        <div className="h-32 w-32 flex items-center justify-center filter drop-shadow-2xl transform hover:scale-110 transition-transform duration-300 text-8xl">
+                            <TeamLogo logo={team.logo} className="w-full h-full object-contain" />
+                        </div>
                         <div className="text-3xl font-bold uppercase tracking-widest text-white text-center">
                             {team.name}
                         </div>

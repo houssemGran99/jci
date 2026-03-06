@@ -1,4 +1,5 @@
 import { AppData, Match, Team } from '@/lib/types';
+import TeamLogo from '../ui/TeamLogo';
 
 export default function BracketView({ data, onTeamClick }: { data: AppData, onTeamClick?: (id: number) => void }) {
     const semiFinals = data.matches.filter(m => m.group === 'Semi Final' || m.matchDay === 6).sort((a, b) => a.id - b.id);
@@ -36,7 +37,9 @@ export default function BracketView({ data, onTeamClick }: { data: AppData, onTe
                         onClick={() => home?.id && onTeamClick?.(home.id)}
                     >
                         <div className="flex items-center gap-2 overflow-hidden">
-                            <span className="text-sm opacity-80 shrink-0">{home?.logo || '🛡️'}</span>
+                            <div className="h-5 w-5 flex items-center justify-center opacity-80 shrink-0">
+                                <TeamLogo logo={home?.logo} className="w-full h-full text-sm" />
+                            </div>
                             <span className={`text-[11px] tracking-wide truncate leading-tight ${homeWin ? 'font-bold text-white' : 'text-white/70 font-medium'}`}>{home?.name || 'TBD'}</span>
                         </div>
                         <div className={`font-mono text-[10px] w-5 text-center ${homeWin ? 'text-white font-bold' : 'text-white/30'}`}>
@@ -50,7 +53,9 @@ export default function BracketView({ data, onTeamClick }: { data: AppData, onTe
                         onClick={() => away?.id && onTeamClick?.(away.id)}
                     >
                         <div className="flex items-center gap-2 overflow-hidden">
-                            <span className="text-sm opacity-80 shrink-0">{away?.logo || '🛡️'}</span>
+                            <div className="h-5 w-5 flex items-center justify-center opacity-80 shrink-0">
+                                <TeamLogo logo={away?.logo} className="w-full h-full text-sm" />
+                            </div>
                             <span className={`text-[11px] tracking-wide truncate leading-tight ${awayWin ? 'font-bold text-white' : 'text-white/70 font-medium'}`}>{away?.name || 'TBD'}</span>
                         </div>
                         <div className={`font-mono text-[10px] w-5 text-center ${awayWin ? 'text-white font-bold' : 'text-white/30'}`}>

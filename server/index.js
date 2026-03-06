@@ -11,6 +11,7 @@ import playersRouter from './routes/players.js';
 import matchesRouter from './routes/matches.js';
 import newsRouter from './routes/news.js';
 import authRouter from './routes/auth.js';
+import uploadRouter from './routes/upload.js';
 
 dotenv.config();
 
@@ -108,6 +109,7 @@ app.use('/api/teams', teamsRouter);
 app.use('/api/players', playersRouter);
 app.use('/api/matches', matchesRouter);
 app.use('/api/news', newsRouter);
+app.use('/api/upload', uploadRouter);
 
 app.use('/api', authRouter); // Auth router mounts on /api directly because it defines /login
 

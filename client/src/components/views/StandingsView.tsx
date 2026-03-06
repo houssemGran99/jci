@@ -2,6 +2,7 @@
 import { AppData } from "@/lib/types";
 import { useMemo } from 'react';
 import { calculateStandings } from "@/lib/utils";
+import TeamLogo from "@/components/ui/TeamLogo";
 
 interface StandingsViewProps {
     data: AppData;
@@ -41,7 +42,9 @@ export default function StandingsView({ data, onTeamClick }: StandingsViewProps)
                                             </td>
                                             <td className="py-1.5 px-1">
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="text-[10px] opacity-100 transition">{t.logo}</span>
+                                                    <div className="h-4 w-4 flex justify-center items-center opacity-100 transition">
+                                                        <TeamLogo logo={t.logo} className="w-full h-full text-xs" />
+                                                    </div>
                                                     <span className={`font-medium break-words leading-tight ${i < 2 ? 'text-white' : 'text-white/70'}`}>{t.name}</span>
                                                 </div>
                                             </td>

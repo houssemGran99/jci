@@ -170,3 +170,20 @@ export const logout = () => {
     localStorage.removeItem('authToken');
     window.location.href = '/';
 };
+
+export const uploadFile = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        headers: {
+            'Authorization': getAuthHeaders().Authorization,
+        },
+        body: formData,
+    });
+
+    if (!res.ok) throw new Error('Failed to upload file');
+    const data = await res.json();
+    return data.url;
+};

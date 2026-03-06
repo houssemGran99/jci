@@ -1,5 +1,6 @@
 
 import { AppData } from "@/lib/types";
+import TeamLogo from "@/components/ui/TeamLogo";
 
 interface TeamsViewProps {
     data: AppData;
@@ -18,7 +19,9 @@ export default function TeamsView({ data }: TeamsViewProps) {
                         </div>
 
                         <div className="flex flex-col items-center pt-2 pb-3">
-                            <div className="text-4xl mb-2 filter drop-shadow-lg opacity-90 group-hover:scale-110 transition duration-300">{t.logo}</div>
+                            <div className="flex justify-center items-center h-12 w-12 mb-2 filter drop-shadow-lg opacity-90 group-hover:scale-110 transition duration-300">
+                                <TeamLogo logo={t.logo} className="h-full w-full object-contain text-4xl" />
+                            </div>
                             <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-wide text-center leading-tight mb-0.5" style={{ color: t.colors[0] }}>{t.name}</h3>
                         </div>
 

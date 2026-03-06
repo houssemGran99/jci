@@ -1,6 +1,7 @@
 
 import React, { forwardRef } from 'react';
 import { Match, Team, Player } from '@/lib/types';
+import TeamLogo from '../ui/TeamLogo';
 
 interface MatchResultTemplateProps {
     match: Match;
@@ -86,7 +87,7 @@ const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>
                     {/* Home Team */}
                     <div className="flex flex-col items-center w-1/3">
                         <div className="w-32 h-32 flex items-center justify-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform">
-                            <span className="text-8xl filter drop-shadow-lg">{homeTeam.logo}</span>
+                            <TeamLogo logo={homeTeam.logo} className="w-full h-full text-8xl filter drop-shadow-lg" />
                         </div>
                         <h3 className="mt-4 font-black text-xl uppercase tracking-widest text-center text-white/90 leading-tight">{homeTeam.name}</h3>
                     </div>
@@ -108,7 +109,7 @@ const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>
                     {/* Away Team */}
                     <div className="flex flex-col items-center w-1/3">
                         <div className="w-32 h-32 flex items-center justify-center drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform">
-                            <span className="text-8xl filter drop-shadow-lg">{awayTeam.logo}</span>
+                            <TeamLogo logo={awayTeam.logo} className="w-full h-full text-8xl filter drop-shadow-lg" />
                         </div>
                         <h3 className="mt-4 font-black text-xl uppercase tracking-widest text-center text-white/90 leading-tight">{awayTeam.name}</h3>
                     </div>
