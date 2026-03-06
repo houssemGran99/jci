@@ -7,7 +7,7 @@ interface ScorersViewProps {
 }
 
 export default function ScorersView({ data }: ScorersViewProps) {
-    const topScorers = useMemo(() => [...data.players].sort((a, b) => b.goals - a.goals).slice(0, 10), [data.players]);
+    const topScorers = useMemo(() => [...data.players].filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals).slice(0, 10), [data.players]);
 
     return (
         <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 font-sans">

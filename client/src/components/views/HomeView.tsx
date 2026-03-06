@@ -167,9 +167,11 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
 
             {/* NEXT MATCHES SECTION */}
             <section className="relative group/section">
-                <div className="flex justify-end items-center mb-2 px-1">
-                    <button onClick={() => onViewChange('matches')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
-                </div>
+                {nextMatches.length > 0 && (
+                    <div className="flex justify-end items-center mb-2 px-1">
+                        <button onClick={() => onViewChange('matches')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
+                    </div>
+                )}
 
                 {/* Left Arrow */}
                 <button
@@ -262,7 +264,9 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
             <section>
                 <div className="flex justify-between items-center mb-2 px-1">
                     <h3 className="text-white/40 font-oswald text-xs uppercase tracking-widest"></h3>
-                    <button onClick={() => onViewChange('standings')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
+                    {(standings.A.length > 0 || standings.B.length > 0) && (
+                        <button onClick={() => onViewChange('standings')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -273,9 +277,11 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
 
             {/* NEWS SECTION */}
             <section className="relative group/section">
-                <div className="flex justify-end items-center mb-2 px-1">
-                    <button onClick={() => onViewChange('news')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
-                </div>
+                {news.length > 0 && (
+                    <div className="flex justify-end items-center mb-2 px-1">
+                        <button onClick={() => onViewChange('news')} className="text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4">voir plus</button>
+                    </div>
+                )}
 
                 {/* Left Arrow */}
                 <button
