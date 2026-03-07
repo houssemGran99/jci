@@ -44,17 +44,31 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
 
 
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {['all', 'today'].map(day => (
-                    <button
-                        key={day}
-                        onClick={() => setSelectedDay(day as number | 'all' | 'today')}
-                        className={`px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest border transition-all whitespace-nowrap ${selectedDay === day
-                            ? 'bg-[#0C9962] text-white border-[#0C9962] shadow-lg'
-                            : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'}`}
-                    >
-                        {day === 'all' ? 'TOUS' : "AUJOURD'HUI"}
-                    </button>
-                ))}
+                {['all', 'today', 1, 2, 3, 6, 7].map(day => {
+                    let label = '';
+                    switch (day) {
+                        case 'all': label = 'TOUS'; break;
+                        case 'today': label = "AUJOURD'HUI"; break;
+                        case 1: label = 'J1'; break;
+                        case 2: label = 'J2'; break;
+                        case 3: label = 'J3'; break;
+                        case 6: label = 'SEMI FINAL'; break;
+                        case 7: label = 'FINAL'; break;
+                        default: label = `J${day}`;
+                    }
+
+                    return (
+                        <button
+                            key={day}
+                            onClick={() => setSelectedDay(day as number | 'all' | 'today')}
+                            className={`px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest border transition-all whitespace-nowrap ${selectedDay === day
+                                ? 'bg-[#0C9962] text-white border-[#0C9962] shadow-lg'
+                                : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'}`}
+                        >
+                            {label}
+                        </button>
+                    );
+                })}
             </div>
 
             <div className="space-y-4">
