@@ -7,9 +7,10 @@ import TeamLogo from '../ui/TeamLogo';
 interface HomeViewProps {
     data: AppData;
     onViewChange: (view: 'matches' | 'standings' | 'news') => void;
+    onTeamClick?: (id: number) => void;
 }
 
-export default function HomeView({ data, onViewChange }: HomeViewProps) {
+export default function HomeView({ data, onViewChange, onTeamClick }: HomeViewProps) {
     const matchesScrollRef = React.useRef<HTMLDivElement>(null);
     const newsScrollRef = React.useRef<HTMLDivElement>(null);
     const [selectedMatch, setSelectedMatch] = React.useState<Match | null>(null);
@@ -111,7 +112,7 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
             {/* Rows */}
             {data.length > 0 ? (
                 data.map((row, index) => (
-                    <div key={row.team.id} className="grid grid-cols-[20px_1fr_25px_25px_25px_25px_35px_35px] gap-1 px-2 py-2 items-center text-[11px] border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors group">
+                    <div key={row.team.id} className="grid grid-cols-[20px_1fr_25px_25px_25px_25px_35px_35px] gap-1 px-2 py-2 items-center text-[11px] border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors group cursor-pointer" onClick={() => onTeamClick && onTeamClick(row.team.id)}>
                         {/* Rank with indicator */}
                         <div className="relative pl-1 font-bold text-white/50">
                             {index + 1}
@@ -203,7 +204,10 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
                                 <div className="flex justify-between items-center relative z-10">
                                     {/* Home */}
                                     <div className="flex flex-col items-center gap-2 w-1/3">
-                                        <div className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110">
+                                        <div
+                                            className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110 cursor-pointer"
+                                            onClick={(e) => { e.stopPropagation(); homeTeam && onTeamClick && onTeamClick(homeTeam.id); }}
+                                        >
                                             <TeamLogo logo={homeTeam?.logo} className="w-full h-full text-3xl" />
                                         </div>
                                         <span className="text-[10px] md:text-xs font-medium uppercase text-center leading-tight truncate w-full text-white/90">{homeTeam?.name}</span>
@@ -233,7 +237,10 @@ export default function HomeView({ data, onViewChange }: HomeViewProps) {
 
                                     {/* Away */}
                                     <div className="flex flex-col items-center gap-2 w-1/3">
-                                        <div className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110">
+                                        <div
+                                            className="h-10 w-10 flex items-center justify-center drop-shadow-lg transform transition-transform group-hover:scale-110 cursor-pointer"
+                                            onClick={(e) => { e.stopPropagation(); awayTeam && onTeamClick && onTeamClick(awayTeam.id); }}
+                                        >
                                             <TeamLogo logo={awayTeam?.logo} className="w-full h-full text-3xl" />
                                         </div>
                                         <span className="text-[10px] md:text-xs font-medium uppercase text-center leading-tight truncate w-full text-white/90">{awayTeam?.name}</span>

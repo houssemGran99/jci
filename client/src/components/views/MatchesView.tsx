@@ -92,13 +92,19 @@ export default function MatchesView({ data, selectedDay, setSelectedDay, onTeamC
                                     {/* Left: Teams Vertical Stack */}
                                     <div className="flex flex-col gap-2 flex-1">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full p-[1px]">
+                                            <div
+                                                className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full p-[1px] hover:scale-110 transition-transform z-10 cursor-pointer"
+                                                onClick={(e) => { e.stopPropagation(); home && onTeamClick(home.id); }}
+                                            >
                                                 <TeamLogo logo={home?.logo} className="w-full h-full text-[12px]" />
                                             </div>
                                             <span className={`font-medium break-words leading-tight ${homeWon ? 'text-white' : 'text-white/70'} text-[12px] md:text-sm capitalize`}>{home?.name || 'Unknown'}</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full p-[1px]">
+                                            <div
+                                                className="w-6 h-6 flex items-center justify-center text-sm bg-white/5 rounded-full p-[1px] hover:scale-110 transition-transform z-10 cursor-pointer"
+                                                onClick={(e) => { e.stopPropagation(); away && onTeamClick(away.id); }}
+                                            >
                                                 <TeamLogo logo={away?.logo} className="w-full h-full text-[12px]" />
                                             </div>
                                             <span className={`font-medium break-words leading-tight ${awayWon ? 'text-white' : 'text-white/70'} text-[12px] md:text-sm capitalize`}>{away?.name || 'Unknown'}</span>

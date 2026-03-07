@@ -231,7 +231,7 @@ export default function Dashboard({ data }: { data: AppData }) {
 
             {/* Main Content - Added Right Padding for Sidebar */}
             <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-24 md:pb-20 md:pr-28">
-                {currentView === 'home' && <HomeView data={appData} onViewChange={(view) => setCurrentView(view as View)} />}
+                {currentView === 'home' && <HomeView data={appData} onViewChange={(view) => setCurrentView(view as View)} onTeamClick={handleTeamClick} />}
                 {currentView === 'standings' && <StandingsView data={appData} onTeamClick={handleTeamClick} />}
                 {currentView === 'matches' && <MatchesView data={appData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
                 {currentView === 'bracket' && <BracketView data={appData} onTeamClick={handleTeamClick} />}
