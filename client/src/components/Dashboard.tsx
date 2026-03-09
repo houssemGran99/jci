@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AppData, Team, Match } from '../lib/types';
 import StandingsView from './views/StandingsView';
 import MatchesView from './views/MatchesView';
@@ -20,6 +20,27 @@ export default function Dashboard({ data }: { data: AppData }) {
     const [appData, setAppData] = useState<AppData>(data);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [selectedDay, setSelectedDay] = useState<number | 'all' | 'today'>('all');
+
+    const processedAppData = useMemo(() => {
+        const goalCounts: Record<number, number> = {};
+        appData.matches.forEach(match => {
+            if ((match.status === 'completed' || match.status === 'inprogress') && match.scorers) {
+                match.scorers.forEach(scorer => {
+                    goalCounts[scorer.playerId] = (goalCounts[scorer.playerId] || 0) + 1;
+                });
+            }
+        });
+
+        const playersWithGoals = appData.players.map(p => ({
+            ...p,
+            goals: goalCounts[p.id] || 0
+        }));
+
+        return {
+            ...appData,
+            players: playersWithGoals
+        };
+    }, [appData]);
 
     const menuItems = [
         {
@@ -231,13 +252,13 @@ export default function Dashboard({ data }: { data: AppData }) {
 
             {/* Main Content - Added Right Padding for Sidebar */}
             <main className="flex-1 max-w-7xl w-full mx-auto p-2 md:p-6 pb-24 md:pb-20 md:pr-28">
-                {currentView === 'home' && <HomeView data={appData} onViewChange={(view) => setCurrentView(view as View)} onTeamClick={handleTeamClick} />}
-                {currentView === 'standings' && <StandingsView data={appData} onTeamClick={handleTeamClick} />}
-                {currentView === 'matches' && <MatchesView data={appData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
-                {currentView === 'bracket' && <BracketView data={appData} onTeamClick={handleTeamClick} />}
-                {currentView === 'scorers' && <ScorersView data={appData} />}
-                {currentView === 'teams' && <TeamsView data={appData} />}
-                {currentView === 'news' && <NewsView data={appData} />}
+                {currentView === 'home' && <HomeView data={processedAppData} onViewChange={(view) => setCurrentView(view as View)} onTeamClick={handleTeamClick} />}
+                {currentView === 'standings' && <StandingsView data={processedAppData} onTeamClick={handleTeamClick} />}
+                {currentView === 'matches' && <MatchesView data={processedAppData} selectedDay={selectedDay} setSelectedDay={setSelectedDay} onTeamClick={handleTeamClick} />}
+                {currentView === 'bracket' && <BracketView data={processedAppData} onTeamClick={handleTeamClick} />}
+                {currentView === 'scorers' && <ScorersView data={processedAppData} />}
+                {currentView === 'teams' && <TeamsView data={processedAppData} />}
+                {currentView === 'news' && <NewsView data={processedAppData} />}
             </main>
 
             {/* Bottom Mobile Navigation */}
@@ -271,7 +292,7 @@ export default function Dashboard({ data }: { data: AppData }) {
             {selectedTeam && (
                 <TeamModal
                     team={selectedTeam}
-                    players={appData.players}
+                    players={processedAppData.players}
                     onClose={() => setSelectedTeam(null)}
                 />
             )}

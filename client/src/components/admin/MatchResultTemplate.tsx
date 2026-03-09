@@ -12,6 +12,8 @@ interface MatchResultTemplateProps {
 
 const MatchResultTemplate = forwardRef<HTMLDivElement, MatchResultTemplateProps>(({ match, homeTeam, awayTeam, players }, ref) => {
     const date = new Date(match.date);
+    // Add 1 hour to adjust the timezone
+    date.setHours(date.getHours() + 1);
     const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase().replace(/ /g, ',');
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
